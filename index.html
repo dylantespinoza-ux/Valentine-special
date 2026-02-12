@@ -4,25 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Valentine's Quest - Dylan & Agustina</title>
-    <link href="[https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap](https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap)" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; margin: 0; padding: 0; }
-        
+
         body, html {
             width: 100%; height: 100%; overflow: hidden;
-            background-color: #1a0101;
+            /* CAMBIO: Fondo Bordó Oscuro */
+            background-color: #2e0005;
             font-family: 'Press Start 2P', cursive;
             color: white;
             display: flex; justify-content: center; align-items: center; text-align: center;
         }
 
-        /* Efecto de líneas de TV vieja (Scanlines) */
         body::before {
             content: "";
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.15) 50%);
             background-size: 100% 4px;
             z-index: 9999; pointer-events: none;
+        }
+        body::after {
+            content: "";
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.7) 100%);
+            z-index: 9998; pointer-events: none;
+        }
+
+        .heart-bg {
+            position: fixed; color: #ff4d6d; font-size: 18px; z-index: 1;
+            animation: floatUp linear infinite; pointer-events: none; opacity: 0;
+        }
+        @keyframes floatUp {
+            0%   { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 0.8; }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(0.5); opacity: 0; }
         }
 
         .screen {
@@ -34,249 +49,360 @@
         }
         .screen.active { display: flex; }
 
-        .pixel-title { font-size: 1.8rem; color: #ff4d6d; text-shadow: 4px 4px #000; margin-bottom: 10px; line-height: 1.4; animation: floatAnim 3s ease-in-out infinite; }
+        #start-screen { cursor: pointer; }
+
+        .pixel-title { font-size: 2rem; color: #ff4d6d; text-shadow: 4px 4px #000; margin-bottom: 10px; line-height: 1.6; animation: floatAnim 3s ease-in-out infinite; }
+        .pixel-subtitle { font-size: 0.65rem; color: #ffb3c1; text-shadow: 2px 2px #000; margin-bottom: 25px; line-height: 1.8; }
+        .heart-icon { font-size: 60px; margin-bottom: 15px; animation: beat 0.8s infinite alternate; display: inline-block; text-shadow: 4px 4px #000; }
+        @keyframes beat { from { transform: scale(1); } to { transform: scale(1.2); } }
+        @keyframes floatAnim { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+        .blink { animation: blink 0.8s infinite; font-size: 0.55rem; color: #ffb3c1; margin-top: 20px; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .loading-text { font-size: 0.5rem; margin-bottom: 15px; color: #ffb3c1; line-height: 2; }
+        .progress-container { width: 100%; height: 30px; border: 4px solid white; padding: 3px; background: #000; box-shadow: 0 0 20px rgba(255,77,109,0.4); }
+        .progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #ff4d6d, #ff85a1); transition: width 0.04s linear; }
+
         .btn {
             font-family: 'Press Start 2P', cursive;
             padding: 16px 20px; min-width: 200px;
-            border: 4px solid #fff; background: #2b0202;
+            border: 4px solid #fff; background: #4a000e;
             color: white; font-size: 0.65rem;
             box-shadow: 6px 6px 0px #000;
             cursor: pointer; margin: 8px;
+            transition: none;
         }
         .btn:active { box-shadow: 0px 0px 0px #000; transform: translate(6px, 6px); }
-        
-        /* Estilos adicionales que ya tenías */
-        .heart-bg { position: fixed; color: #ff4d6d; z-index: 1; animation: floatUp linear infinite; pointer-events: none; opacity: 0; }
-        @keyframes floatUp { 0% { transform: translateY(110vh); opacity: 0.8; } 100% { transform: translateY(-10vh); opacity: 0; } }
-        @keyframes floatAnim { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-        .blink { animation: blink 0.8s infinite; font-size: 0.55rem; color: #ffb3c1; }
-        @keyframes blink { 50% { opacity: 0; } }
-        
-        /* Game Canvas Setup */
-        #game-canvas-wrapper { border: 4px solid #ff4d6d; background: #0a0010; line-height: 0; }
-        
-        /* Estilo para el contador de tiempo */
-        .countdown-val { font-size: 1.2rem; color: #ff4d6d; text-shadow: 3px 3px #000; }
-        
-        /* Achievement Toast */
+        .btn.yes { background: #7a0020; border-color: #ff4d6d; color: #ffb3c1; }
+        .btn.yes:hover { background: #a3002a; }
+
+        .level-title { font-size: 0.75rem; color: #ff4d6d; margin-bottom: 6px; text-shadow: 3px 3px #000; }
+        .level-desc  { font-size: 0.45rem; color: #ffb3c1; line-height: 2; margin-bottom: 20px; }
+        .level-badge { font-size: 0.4rem; color: #ffd700; margin-bottom: 15px; letter-spacing: 1px; }
+
+        #game-canvas-wrapper {
+            position: relative; width: 300px; height: 300px;
+            border: 4px solid #ff4d6d; background: #1a0003;
+            overflow: hidden; box-shadow: 0 0 20px rgba(255,77,109,0.5);
+        }
+        #game-canvas { width: 100%; height: 100%; display: block; }
+        .game-ui { font-size: 0.45rem; color: #ffb3c1; margin-bottom: 8px; display: flex; justify-content: space-between; width: 300px; flex-wrap: wrap; gap: 4px; }
+        .game-instructions { font-size: 0.4rem; color: #888; margin-top: 8px; line-height: 2; }
+
+        .combo-popup {
+            position: fixed; pointer-events: none; z-index: 200;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem; color: #ffd700; text-shadow: 2px 2px #000;
+            animation: comboAnim 0.8s ease-out forwards;
+        }
+        @keyframes comboAnim {
+            0%   { opacity: 1; transform: translateY(0) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-50px) scale(0.8); }
+        }
+
+        #gameover-screen .go-title { font-size: 1.2rem; color: #ff4d6d; text-shadow: 4px 4px #000; margin-bottom: 20px; animation: floatAnim 1s ease-in-out infinite; }
+        #gameover-screen .go-sub   { font-size: 0.5rem; color: #ffb3c1; line-height: 2.5; margin-bottom: 25px; }
+
+        .countdown-box { background: #1a0003; border: 4px solid #ff4d6d; padding: 20px 30px; margin-bottom: 20px; box-shadow: 0 0 20px rgba(255,77,109,0.4); }
+        .countdown-title { font-size: 0.5rem; color: #ffb3c1; margin-bottom: 15px; line-height: 2; }
+        .countdown-numbers { display: flex; gap: 15px; justify-content: center; align-items: center; }
+        .countdown-unit { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .countdown-val { font-size: 1.2rem; color: #ff4d6d; text-shadow: 3px 3px #000; min-width: 2ch; }
+        .countdown-label { font-size: 0.3rem; color: #888; }
+        .countdown-sep { font-size: 1.2rem; color: #ff4d6d; margin-bottom: 15px; }
+
+        .question-text { font-size: 0.75rem; color: #ffb3c1; line-height: 2; margin-bottom: 25px; text-shadow: 2px 2px #000; }
+        #btn-no { position: relative; }
+
+        #final-screen h2 { font-size: 0.7rem; line-height: 2.5; color: #ffb3c1; text-shadow: 2px 2px #000; }
+        .fireworks-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+
+        /* Achievement toast */
         .achievement {
             position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
-            background: #1a0101; border: 3px solid #ffd700;
+            /* CAMBIO: Fondo acorde al bordó */
+            background: #4a000e; border: 3px solid #ffd700;
             padding: 12px 20px; z-index: 500;
-            animation: achieveIn 0.3s ease-out;
+            box-shadow: 4px 4px #000, 0 0 20px rgba(255,215,0,0.4);
+            animation: achieveIn 0.3s ease-out, achieveOut 0.4s ease-in 2.5s forwards;
+            white-space: nowrap;
         }
-        @keyframes achieveIn { from { bottom: -100px; } to { bottom: 60px; } }
+        .achievement .ach-label { font-size: 0.3rem; color: #ffd700; margin-bottom: 6px; }
+        .achievement .ach-title { font-size: 0.45rem; color: #fff; }
+        @keyframes achieveIn  { from { opacity:0; transform: translateX(-50%) translateY(20px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+        @keyframes achieveOut { from { opacity:1; } to { opacity:0; transform: translateX(-50%) translateY(20px); } }
+
+        .stats { position: fixed; bottom: 10px; left: 0; width: 100%; font-size: 0.38rem; color: #ff4d6d; opacity: 0.6; letter-spacing: 1px; z-index: 100; text-align: center; }
+
+        @keyframes shake {
+            0%   { transform: translate(1px,1px); }
+            20%  { transform: translate(-3px,0px); }
+            40%  { transform: translate(3px,2px); }
+            60%  { transform: translate(1px,-1px); }
+            80%  { transform: translate(-1px,2px); }
+            100% { transform: translate(0,0); }
+        }
+        .shake { animation: shake 0.3s; }
+
+        .confetti-piece { position: fixed; pointer-events: none; z-index: 50; width: 8px; height: 8px; animation: confettiFall linear forwards; }
+        @keyframes confettiFall {
+            0%   { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes flashRed {
+            /* CAMBIO: Flash que vuelve al bordó oscuro */
+            0%,100% { background-color: #2e0005; }
+            50%      { background-color: #7a0020; }
+        }
+        .flash-red { animation: flashRed 0.2s 2; }
     </style>
 </head>
 <body>
 
 <div id="hearts-container"></div>
+<div class="fireworks-container" id="fireworks"></div>
 
 <div id="start-screen" class="screen active" onclick="goToLoading()">
-    <div style="font-size: 50px; margin-bottom: 20px;">❤</div>
+    <div class="heart-icon">❤</div>
     <h1 class="pixel-title">VALENTINE<br>QUEST</h1>
-    <p style="font-size: 0.6rem; margin-bottom: 20px;">UNA AVENTURA PARA<br>LA GORDA MÁS LINDA</p>
+    <p class="pixel-subtitle">UNA AVENTURA PARA<br>LA GORDA MÁS LINDA</p>
     <p class="blink">— TOCÁ PARA EMPEZAR —</p>
 </div>
 
+<div id="valentines-special" class="screen">
+    <div class="vday-badge" style="background: #ffd700; color: #000; padding: 8px; font-size: 0.4rem; margin-bottom: 10px;">🌟 14 DE FEBRERO 🌟</div>
+    <div class="heart-icon">💝</div>
+    <p style="font-size: 0.9rem; color: #ffd700; text-shadow: 3px 3px #000; margin-bottom: 15px;">¡FELIZ DÍA DE<br>SAN VALENTÍN!</p>
+    <button class="btn yes" onclick="goToLoading()">EMPEZAR ❤</button>
+</div>
+
 <div id="loading-screen" class="screen">
-    <p id="loading-text" style="font-size: 0.5rem; margin-bottom: 15px;">CARGANDO...</p>
-    <div style="width: 100%; height: 20px; border: 3px solid white;">
-        <div id="bar" style="width: 0%; height: 100%; background: #ff4d6d;"></div>
-    </div>
+    <p class="loading-text" id="loading-text">CARGANDO ALGO RE LINDO<br>PARA MI GORDA MALA...</p>
+    <div class="progress-container"><div class="progress-bar" id="bar"></div></div>
+    <p class="blink" style="margin-top:15px; font-size:0.4rem;">◆ ◆ ◆</p>
 </div>
 
 <div id="level1-screen" class="screen">
-    <p style="color: #ffd700; font-size: 0.5rem; margin-bottom: 10px;">NIVEL 1: TRIVIA</p>
+    <p class="level-badge">⭐ NIVEL 1 DE 3 ⭐</p>
+    <p class="level-title">MISIÓN: TRIVIA</p>
+    <p class="level-desc">DEMOSTRÁ QUE SABÉS<br>ALGO DE DYLAN</p>
     <div id="trivia-container"></div>
 </div>
 
 <div id="level2-screen" class="screen">
-    <p style="font-size: 0.5rem; margin-bottom: 10px;">ATRAPÁ 10 CORAZONES</p>
-    <div style="font-size: 0.4rem; margin-bottom: 10px;">SCORE: <span id="score">0</span> | VIDAS: <span id="lives">❤❤❤</span></div>
+    <p class="level-badge">⭐ NIVEL 2 DE 3 ⭐</p>
+    <p class="level-title">MISIÓN: ATRAPAR ❤</p>
+    <div class="game-ui">
+        <span>SCORE: <span id="score">0</span>/10</span>
+        <span>VIDAS: <span id="lives">❤❤❤</span></span>
+    </div>
     <div id="game-canvas-wrapper">
         <canvas id="game-canvas" width="300" height="300"></canvas>
     </div>
+    <p class="game-instructions">TOCÁ LOS ❤ · ESQUIVÁ LAS 💣</p>
 </div>
 
 <div id="gameover-screen" class="screen">
-    <h2 style="color: #ff4d6d;">GAME OVER</h2>
-    <p style="font-size: 0.5rem; margin: 20px 0;">¡GORDA MALA!<br>SE TE ESCAPARON.</p>
-    <button class="btn" onclick="restartGame()">REINTENTAR ❤</button>
+    <p class="go-title">GAME OVER</p>
+    <p class="go-sub">SE TE ESCAPARON LOS CORAZONES...<br>IGUAL TE AMO, GORDA 💀❤</p>
+    <button class="btn yes" onclick="restartGame()">REINTENTAR ❤</button>
 </div>
 
 <div id="level3-screen" class="screen">
-    <p style="font-size: 0.6rem; margin-bottom: 20px;">NUESTRA HISTORIA</p>
-    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-        <div><span id="cd-years" class="countdown-val">0</span><br><small>AÑOS</small></div>
-        <div><span id="cd-months" class="countdown-val">0</span><br><small>MESES</small></div>
-        <div><span id="cd-days" class="countdown-val">0</span><br><small>DÍAS</small></div>
+    <p class="level-badge">⭐ NIVEL 3 DE 3 ⭐</p>
+    <p class="level-title">NUESTRA HISTORIA</p>
+    <div class="countdown-box">
+        <div class="countdown-numbers">
+            <div class="countdown-unit"><span class="countdown-val" id="cd-years">0</span><span class="countdown-label">AÑOS</span></div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit"><span class="countdown-val" id="cd-months">0</span><span class="countdown-label">MESES</span></div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit"><span class="countdown-val" id="cd-days">0</span><span class="countdown-label">DÍAS</span></div>
+        </div>
     </div>
-    <button class="btn" onclick="goToQuestion()">SIGUIENTE ❤</button>
+    <button class="btn yes" onclick="goToQuestion()">SEGUIR ❤</button>
 </div>
 
 <div id="question-screen" class="screen">
-    <p style="line-height: 1.6;">¿QUERÉS SER MI<br>SAN VALENTINE,<br>GORDA MALA?</p>
-    <button class="btn" onclick="sayYes(event)" style="background: #7a0020;">SÍ, OBVIO 💖</button>
-    <button class="btn" id="btn-no" onmouseover="moveNo(event)" onclick="moveNo(event)">NO</button>
+    <p class="question-text">¿QUERÉS SER MI<br>SAN VALENTINE,<br>GORDA MALA?</p>
+    <button class="btn yes" onclick="sayYes(event)">SÍ, OBVIO 💖</button>
+    <button class="btn" id="btn-no" onclick="moveNo(event)" onmouseover="moveNo(event)">NO</button>
 </div>
 
 <div id="final-screen" class="screen">
-    <div style="font-size: 60px;">💖</div>
-    <h2 id="typewriter" style="font-size: 0.7rem; line-height: 1.8;"></h2>
+    <div class="heart-icon" style="font-size:70px;">❤</div>
+    <h2 id="typewriter"></h2>
 </div>
 
+<div class="stats">P1: DYLAN ❤ P2: AGUSTINA | JUNTOS DESDE 10/05/2023</div>
+
 <script>
-// --- Lógica de Audio (Simplificada para asegurar que funcione) ---
+// --- AUDIO Y LÓGICA (Se mantiene igual para que funcione perfectamente) ---
 let audioCtx;
-function initAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-}
-
-function playNote(freq, dur) {
-    if(!audioCtx) return;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playNote(freq, start, dur, type='square', vol=0.04) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime + start);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + start + dur);
     osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start(); osc.stop(audioCtx.currentTime + dur);
+    osc.start(audioCtx.currentTime + start); osc.stop(audioCtx.currentTime + start + dur + 0.01);
+}
+function playBlip()    { playNote(440,0,0.08); playNote(880,0.05,0.08); }
+function playError()   { playNote(220,0,0.15); playNote(180,0.1,0.2); }
+function playCorrect() { playNote(523,0,0.1); playNote(659,0.1,0.1); playNote(783,0.2,0.15); }
+function playCatch()   { playNote(660,0,0.06); playNote(880,0.05,0.08); }
+function playBomb()    { playNote(150,0,0.08); playNote(100,0.05,0.15,'sawtooth'); }
+function playGameOver(){ playNote(392,0,0.2); playNote(349,0.2,0.2); playNote(330,0.4,0.2); playNote(294,0.6,0.4); }
+
+let bgmInterval;
+function startBGM() {
+    if (!audioCtx) return;
+    const p = [[392,0,0.18],[440,0.2,0.18],[494,0.4,0.18],[523,0.6,0.25],[494,0.9,0.18],[440,1.1,0.18],[392,1.3,0.35]];
+    function loop() { p.forEach(([f,t,d]) => playNote(f,t,d,'triangle',0.03)); }
+    loop(); bgmInterval = setInterval(loop, 2000);
 }
 
-// --- Sistema de Navegación ---
+function showAchievement(icon, title) {
+    const el = document.createElement('div');
+    el.className = 'achievement';
+    el.innerHTML = `<div class="ach-label">🏆 LOGRO DESBLOQUEADO</div><div class="ach-title">${icon} ${title}</div>`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+}
+
+function createHeart(isExplosion=false, x, y) {
+    const h = document.createElement('div');
+    h.className = 'heart-bg';
+    h.innerHTML = '❤';
+    if (isExplosion) {
+        h.style.left=x+'px'; h.style.top=y+'px';
+        h.animate([{opacity:1},{opacity:0}],{duration:1000});
+        document.getElementById('hearts-container').appendChild(h);
+        setTimeout(()=>h.remove(),1000);
+    } else {
+        h.style.left=Math.random()*95+'vw';
+        h.style.animationDuration=(Math.random()*3+3)+'s';
+        document.getElementById('hearts-container').appendChild(h);
+        setTimeout(()=>h.remove(),6000);
+    }
+}
+setInterval(()=>createHeart(false),600);
+
 function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 }
 
 function goToLoading() {
-    initAudio();
+    initAudio(); startBGM(); playBlip();
     showScreen('loading-screen');
-    let w = 0;
-    const bar = document.getElementById('bar');
-    const interval = setInterval(() => {
-        w += 2;
-        bar.style.width = w + '%';
-        if(w >= 100) {
-            clearInterval(interval);
-            showScreen('level1-screen');
-            buildTrivia();
-        }
-    }, 30);
+    let w=0;
+    const bar=document.getElementById('bar');
+    const iv=setInterval(()=>{
+        w++; bar.style.width=w+'%';
+        if(w>=100) { clearInterval(iv); setTimeout(()=>{ showScreen('level1-screen'); buildTrivia(); },600); }
+    },30);
 }
 
-// --- Trivia ---
-const triviaQ = [
-    { q: "¿CÓMO LE DICE DYLAN A AGUSTINA?", opts: ["FLACA", "GORDA", "AMOR"], ans: 1 },
-    { q: "¿EN QUÉ MES EMPEZÓ TODO?", opts: ["MAYO", "JUNIO", "ABRIL"], ans: 0 }
+const triviaQ=[
+    {q:"¿CÓMO LE DICE DYLAN\nA AGUSTINA?",opts:["FLACA","PRECIOSA","GORDA","AMORCITO"],ans:2},
+    {q:"¿DESDE QUÉ MES\nESTÁN JUNTOS?",opts:["MARZO","MAYO","JULIO","ENERO"],ans:1},
+    {q:"¿EN QUÉ AÑO\nSE JUNTARON?",opts:["2020","2021","2022","2023"],ans:3}
 ];
-let currentQ = 0;
-
-function buildTrivia() {
-    const q = triviaQ[currentQ];
-    const container = document.getElementById('trivia-container');
-    container.innerHTML = `
-        <p style="margin-bottom:20px; font-size:0.6rem;">${q.q}</p>
-        ${q.opts.map((o, i) => `<button class="btn" onclick="checkTrivia(${i})">${o}</button>`).join('')}
-    `;
+let triviaIdx=0;
+function buildTrivia(){ triviaIdx=0; renderTrivia(); }
+function renderTrivia(){
+    const q=triviaQ[triviaIdx];
+    document.getElementById('trivia-container').innerHTML=`
+        <p style="font-size:0.5rem;color:#ffb3c1;margin-bottom:20px;">${q.q}</p>
+        ${q.opts.map((o,i)=>`<button class="btn" onclick="answerTrivia(${i})">${o}</button>`).join('')}`;
 }
-
-function checkTrivia(i) {
-    if(i === triviaQ[currentQ].ans) {
-        playNote(600, 0.1);
-        currentQ++;
-        if(currentQ < triviaQ.length) buildTrivia();
-        else { showScreen('level2-screen'); startGame(); }
+function answerTrivia(idx){
+    if(idx===triviaQ[triviaIdx].ans){
+        playCorrect(); triviaIdx++;
+        if(triviaIdx<triviaQ.length) renderTrivia();
+        else { showAchievement('🧠','¡SABELOTODO!'); setTimeout(()=>{ showScreen('level2-screen'); startGame(); },1000); }
     } else {
-        playNote(150, 0.2);
-        alert("¡ERROR, GORDA MALA!");
+        playError(); document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'),300);
     }
 }
 
-// --- Mini Juego (Corazones) ---
-const canvas = document.getElementById('game-canvas');
-const ctx = canvas.getContext('2d');
-let score = 0;
-let gameInterval;
+const canvas=document.getElementById('game-canvas'), ctx=canvas.getContext('2d');
+let score=0, lives=3, gameRunning=false, fallingObjects=[], gameLoopId;
 
-function startGame() {
-    score = 0;
-    document.getElementById('score').innerText = score;
-    gameInterval = setInterval(updateGame, 1000/30);
+function startGame(){
+    score=0; lives=3; fallingObjects=[]; gameRunning=true;
+    document.getElementById('score').textContent='0'; updateLives();
+    gameLoopId=setInterval(updateGame,30);
+    canvas.onclick=handleClick;
 }
+function restartGame(){ showScreen('level2-screen'); startGame(); }
 
-function updateGame() {
+function updateGame(){
+    if(!gameRunning) return;
     ctx.clearRect(0,0,300,300);
-    // Dibujo simple de corazón para el ejemplo
-    ctx.fillStyle = "#ff4d6d";
-    ctx.font = "30px Arial";
-    ctx.fillText("❤", 135, 150);
-    // Aquí iría tu lógica de objetos cayendo (puedes pegar la que ya tenías)
-}
-
-// Para el ejemplo, al hacer click en el canvas simulamos ganar para avanzar:
-canvas.onclick = () => {
-    score++;
-    document.getElementById('score').innerText = score;
-    if(score >= 5) {
-        clearInterval(gameInterval);
-        showScreen('level3-screen');
-        buildCountdown();
+    if(Math.random()<0.05) fallingObjects.push({x:Math.random()*280, y:-20, isBomb:Math.random()<0.2});
+    for(let i=fallingObjects.length-1;i>=0;i--){
+        let o=fallingObjects[i]; o.y+=4;
+        ctx.font="20px Arial";
+        ctx.fillText(o.isBomb?'💣':'❤', o.x, o.y);
+        if(o.y>300){
+            fallingObjects.splice(i,1);
+            if(!o.isBomb){ lives--; updateLives(); if(lives<=0) endGame(false); }
+        }
     }
-};
-
-// --- Contador Real ---
-function buildCountdown() {
-    const start = new Date(2023, 4, 10); // 10 de Mayo
-    const now = new Date();
-    const diff = now - start;
-    
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    document.getElementById('cd-years').innerText = Math.floor(days / 365);
-    document.getElementById('cd-months').innerText = Math.floor((days % 365) / 30);
-    document.getElementById('cd-days').innerText = days % 30;
+}
+function updateLives(){ document.getElementById('lives').textContent='❤'.repeat(lives); }
+function handleClick(e){
+    const r=canvas.getBoundingClientRect(), cx=e.clientX-r.left, cy=e.clientY-r.top;
+    for(let i=fallingObjects.length-1;i>=0;i--){
+        let o=fallingObjects[i];
+        if(Math.hypot(cx-o.x, cy-o.y)<30){
+            fallingObjects.splice(i,1);
+            if(o.isBomb){ lives--; updateLives(); playBomb(); if(lives<=0) endGame(false); }
+            else { score++; document.getElementById('score').textContent=score; playCatch(); if(score>=10) endGame(true); }
+            break;
+        }
+    }
+}
+function endGame(win){
+    gameRunning=false; clearInterval(gameLoopId);
+    if(win){ showAchievement('❤','¡GANASTE!'); setTimeout(()=>{ showScreen('level3-screen'); buildCountdown(); },1000); }
+    else { playGameOver(); showScreen('gameover-screen'); }
 }
 
-function goToQuestion() { showScreen('question-screen'); }
+function buildCountdown(){
+    const start=new Date(2023,4,10), now=new Date();
+    let diff=Math.floor((now-start)/(1000*60*60*24));
+    document.getElementById('cd-years').textContent = Math.floor(diff/365);
+    document.getElementById('cd-months').textContent = Math.floor((diff%365)/30);
+    document.getElementById('cd-days').textContent = (diff%365)%30;
+}
+function goToQuestion(){ showScreen('question-screen'); }
 
-// --- El Botón NO que huye ---
-function moveNo(e) {
-    const btn = document.getElementById('btn-no');
-    const x = Math.random() * (window.innerWidth - 100);
-    const y = Math.random() * (window.innerHeight - 50);
-    btn.style.position = 'fixed';
-    btn.style.left = x + 'px';
-    btn.style.top = y + 'px';
+function moveNo(e){
+    const btn=document.getElementById('btn-no');
+    btn.style.position='fixed';
+    btn.style.left=Math.random()*80+'vw'; btn.style.top=Math.random()*80+'vh';
 }
 
-function sayYes(e) {
+function sayYes(e){
+    clearInterval(bgmInterval);
     showScreen('final-screen');
-    const txt = "SABÍA QUE IBAS A DECIR QUE SÍ... \n\n TE AMO MUCHÍSIMO GORDA MALA. \n\n GRACIAS POR ESTAR CONMIGO.";
-    let i = 0;
-    function type() {
-        if(i < txt.length) {
-            document.getElementById('typewriter').innerHTML += txt[i] === '\n' ? '<br>' : txt[i];
-            i++;
-            setTimeout(type, 50);
+    const lines=["SABÍA QUE IBAS","A DECIR QUE SÍ ❤","","TE AMO MUCHO","GORDA MALA 💖"];
+    let li=0, ci=0, el=document.getElementById('typewriter');
+    function type(){
+        if(li<lines.length){
+            if(ci<lines[li].length){ el.innerHTML+=lines[li][ci]; ci++; setTimeout(type,100); }
+            else { el.innerHTML+='<br>'; li++; ci=0; setTimeout(type,500); }
         }
     }
     type();
 }
-
-// --- Corazones de fondo ---
-setInterval(() => {
-    const h = document.createElement('div');
-    h.className = 'heart-bg';
-    h.innerHTML = '❤';
-    h.style.left = Math.random() * 100 + 'vw';
-    h.style.animationDuration = (Math.random() * 3 + 2) + 's';
-    document.getElementById('hearts-container').appendChild(h);
-    setTimeout(() => h.remove(), 5000);
-}, 600);
 </script>
-
 </body>
 </html>
