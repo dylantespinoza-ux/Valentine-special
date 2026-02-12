@@ -3,55 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para mi Valentín</title>
+    <title>My Valentine Pixel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #4a0404; /* Bordó */
-            font-family: 'Press+Start+2P', cursive;
+            background-color: #4a0404;
+            font-family: 'Press Start 2P', cursive;
             color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
+            user-select: none;
         }
 
-        /* Corazones de fondo */
+        /* Corazones flotantes */
         .heart-bg {
             position: absolute;
             color: #ff4d6d;
-            font-size: 20px;
-            user-select: none;
+            font-size: 24px;
             z-index: 0;
-            animation: float 5s linear infinite;
+            animation: float 4s linear infinite;
+            pointer-events: none;
         }
 
         @keyframes float {
-            0% { transform: translateY(110vh) scale(1); opacity: 1; }
-            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
 
-        /* Pantalla de Inicio */
-        #start-screen {
+        .screen {
+            position: relative;
             z-index: 10;
-            cursor: pointer;
+            padding: 20px;
+            display: none;
         }
+
+        #start-screen { display: block; cursor: pointer; }
 
         .pixel-title {
-            font-size: 3rem;
+            font-size: 2.2rem;
+            color: #ff4d6d;
             text-shadow: 4px 4px #000;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
+            line-height: 1.8;
+            letter-spacing: 2px;
         }
 
         .blink {
-            animation: blink 1s infinite;
-            font-size: 1rem;
+            animation: blink 0.8s infinite;
+            font-size: 0.7rem;
+            color: #ffb3c1;
         }
 
         @keyframes blink {
@@ -59,18 +66,14 @@
             50% { opacity: 0; }
         }
 
-        /* Barra de Carga */
-        #loading-screen {
-            display: none;
-            z-index: 10;
-            width: 80%;
-        }
-
+        /* Interfaz de carga */
         .progress-container {
-            width: 100%;
-            height: 30px;
-            border: 4px solid white;
-            padding: 3px;
+            width: 280px;
+            height: 35px;
+            border: 6px solid white;
+            padding: 4px;
+            margin: 20px auto;
+            background: #000;
         }
 
         .progress-bar {
@@ -79,80 +82,112 @@
             background-color: #ff4d6d;
         }
 
-        /* Pregunta Principal */
-        #question-screen {
-            display: none;
-            z-index: 10;
-        }
-
+        /* Estilo de botones */
         .btn {
-            font-family: 'Press+Start+2P', cursive;
-            padding: 15px 25px;
-            margin: 20px;
-            border: 4px solid white;
-            background: #800020;
+            font-family: 'Press Start 2P', cursive;
+            padding: 15px 20px;
+            margin: 10px;
+            border: 4px solid #fff;
+            background: #2b0202;
             color: white;
             cursor: pointer;
-            transition: 0.2s;
+            font-size: 0.8rem;
+            box-shadow: 5px 5px 0px #000;
+            outline: none;
         }
 
-        .btn:hover { background: #ff4d6d; }
-
-        #btn-no { position: relative; }
-
-        /* Pantalla Final */
-        #final-screen {
-            display: none;
-            z-index: 20;
+        .btn:active {
+            box-shadow: 0px 0px 0px #000;
+            transform: translate(5px, 5px);
         }
 
-        h1 { font-size: 1.5rem; line-height: 2; }
+        #final-screen h1 {
+            font-size: 1rem;
+            line-height: 2.5;
+            color: #ff4d6d;
+        }
     </style>
 </head>
 <body onclick="startFlow()">
 
     <div id="hearts-container"></div>
 
-    <div id="start-screen">
-        <h1 class="pixel-title">VALENTÍN</h1>
-        <p class="blink">Presiona en cualquier lugar para comenzar</p>
+    <div id="start-screen" class="screen">
+        <h1 class="pixel-title">VALENTINE</h1>
+        <p class="blink">PRESIONA EN CUALQUIER LUGAR</p>
     </div>
 
-    <div id="loading-screen">
-        <p>Cargando amor...</p>
+    <div id="loading-screen" class="screen">
+        <p style="font-size: 0.7rem; margin-bottom: 15px;">CARGANDO TU SORPRESA...</p>
         <div class="progress-container">
             <div class="progress-bar" id="bar"></div>
         </div>
     </div>
 
-    <div id="question-screen">
-        <h2 id="main-question">¿Quieres ser mi San Valentín?</h2>
-        <button class="btn" onclick="sayYes(event)">SÍ</button>
-        <button class="btn" id="btn-no" onmouseover="moveNo()" onclick="moveNo()">NO</button>
+    <div id="question-screen" class="screen">
+        <h2 style="font-size: 0.9rem; margin-bottom: 40px;">¿QUIERES SER MI SAN VALENTINE?</h2>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
+            <button class="btn" onclick="sayYes(event)">SÍ</button>
+            <button class="btn" id="btn-no" onmouseover="moveNo()" onclick="moveNo()">NO</button>
+        </div>
     </div>
 
-    <div id="final-screen">
-        <h1>¡SABÍA QUE IBAS A DECIR QUE SÍ!<br>💖 TE AMO 💖</h1>
+    <div id="final-screen" class="screen">
+        <h1>¡SABÍA QUE IBAS A DECIR QUE SÍ!<br><br>💖 TE AMO 💖</h1>
     </div>
 
     <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playBlip() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function playWin() {
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (i * 0.1));
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime + (i * 0.1));
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (i * 0.1) + 0.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + (i * 0.1));
+                osc.stop(audioCtx.currentTime + (i * 0.1) + 0.2);
+            });
+        }
+
         let step = 0;
 
-        // Crear corazones de fondo
         function createHeart() {
             const heart = document.createElement('div');
             heart.classList.add('heart-bg');
-            heart.innerHTML = '❤';
+            heart.innerHTML = '❤'; 
             heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
             document.getElementById('hearts-container').appendChild(heart);
-            setTimeout(() => heart.remove(), 5000);
+            setTimeout(() => heart.remove(), 4000);
         }
-        setInterval(createHeart, 300);
+        setInterval(createHeart, 400);
 
         function startFlow() {
             if (step !== 0) return;
             step = 1;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            playBlip();
+            
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('loading-screen').style.display = 'block';
             
@@ -161,12 +196,13 @@
             let interval = setInterval(() => {
                 if (width >= 100) {
                     clearInterval(interval);
-                    showQuestion();
+                    setTimeout(showQuestion, 500);
                 } else {
-                    width++;
+                    width += 2;
                     bar.style.width = width + '%';
+                    if (width % 20 === 0) playBlip();
                 }
-            }, 30);
+            }, 50);
         }
 
         function showQuestion() {
@@ -174,16 +210,15 @@
             document.getElementById('question-screen').style.display = 'block';
         }
 
-        // El botón NO se escapa o cambia de texto
         let noCount = 0;
-        const phrases = ["¿Estás segura?", "Piénsalo bien...", "¡Oye! 🥺", "Me vas a romper el corazón", "¡Haz clic en el SÍ!"];
+        const phrases = ["¿SEGURA?", "PIÉNSALO BIEN", "¡OYE! 🥺", "ERROR 404", "¡DI QUE SÍ!"];
         
         function moveNo() {
+            playBlip();
             const btnNo = document.getElementById('btn-no');
-            const x = Math.random() * (window.innerWidth - 150);
-            const y = Math.random() * (window.innerHeight - 150);
-            
-            btnNo.style.position = 'absolute';
+            const x = Math.random() * (window.innerWidth - 180);
+            const y = Math.random() * (window.innerHeight - 80);
+            btnNo.style.position = 'fixed';
             btnNo.style.left = x + 'px';
             btnNo.style.top = y + 'px';
             
@@ -195,12 +230,11 @@
 
         function sayYes(event) {
             event.stopPropagation();
+            playWin();
             document.getElementById('question-screen').style.display = 'none';
             document.getElementById('final-screen').style.display = 'block';
-            
-            // Efecto explosión de corazones
-            for(let i=0; i<50; i++) {
-                setTimeout(createHeart, i * 50);
+            for(let i=0; i<150; i++) {
+                setTimeout(createHeart, i * 20);
             }
         }
     </script>
