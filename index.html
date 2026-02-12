@@ -1,212 +1,629 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Valentine's Quest - Dylan</title>
+    <title>Valentine's Quest - Dylan & Agustina</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-        
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; 
-            background-color: #4a0404;
-            background-image: 
-                radial-gradient(circle, transparent 20%, #1a0101 120%),
-                linear-gradient(rgba(255, 255, 255, 0.05) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 2px, transparent 2px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
-            font-family: 'Press Start 2P', cursive; color: white; 
-            display: flex; justify-content: center; align-items: center; text-align: center; 
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; margin: 0; padding: 0; }
 
-        /* EFECTO CRT */
-        body::after {
-            content: " ";
-            position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px; z-index: 1000; pointer-events: none;
-        }
+```
+    body, html {
+        width: 100%; height: 100%; overflow: hidden;
+        background-color: #1a0101;
+        font-family: 'Press Start 2P', cursive;
+        color: white;
+        display: flex; justify-content: center; align-items: center; text-align: center;
+    }
 
-        .heart-bg { position: absolute; color: #ff4d6d; font-size: 20px; z-index: 1; animation: float 4s linear infinite; pointer-events: none; }
-        @keyframes float { 0% { transform: translateY(110vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; } }
+    body::before {
+        content: "";
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.15) 50%);
+        background-size: 100% 4px;
+        z-index: 9999; pointer-events: none;
+    }
+    body::after {
+        content: "";
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.7) 100%);
+        z-index: 9998; pointer-events: none;
+    }
 
-        .heart-icon { font-size: 50px; color: #ff4d6d; margin-bottom: 20px; animation: beat 0.8s infinite alternate; display: inline-block; text-shadow: 4px 4px #000; }
-        @keyframes beat { from { transform: scale(1); } to { transform: scale(1.2); } }
+    .heart-bg {
+        position: fixed; color: #ff4d6d; font-size: 18px; z-index: 1;
+        animation: floatUp linear infinite; pointer-events: none; opacity: 0;
+    }
+    @keyframes floatUp {
+        0%   { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 0.8; }
+        100% { transform: translateY(-10vh) rotate(360deg) scale(0.5); opacity: 0; }
+    }
 
-        .screen { position: relative; z-index: 10; padding: 15px; width: 95%; max-width: 450px; display: none; }
-        #start-screen { display: block; cursor: pointer; }
+    .screen {
+        position: relative; z-index: 10;
+        width: 95%; max-width: 460px;
+        display: none; flex-direction: column;
+        align-items: center; justify-content: center;
+        padding: 20px;
+    }
+    .screen.active { display: flex; }
 
-        .pixel-title { 
-            font-size: 1.8rem; color: #ff4d6d; text-shadow: 4px 4px #000; 
-            margin-bottom: 30px; line-height: 1.5; animation: floating 3s ease-in-out infinite;
-        }
-        @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+    #start-screen { cursor: pointer; }
 
-        .blink { animation: blink 0.8s infinite; font-size: 0.6rem; color: #ffb3c1; text-shadow: 2px 2px #000; }
-        @keyframes blink { 50% { opacity: 0; } }
+    .pixel-title { font-size: 2rem; color: #ff4d6d; text-shadow: 4px 4px #000; margin-bottom: 10px; line-height: 1.6; animation: floatAnim 3s ease-in-out infinite; }
+    .pixel-subtitle { font-size: 0.65rem; color: #ffb3c1; text-shadow: 2px 2px #000; margin-bottom: 25px; line-height: 1.8; }
+    .heart-icon { font-size: 60px; margin-bottom: 15px; animation: beat 0.8s infinite alternate; display: inline-block; text-shadow: 4px 4px #000; }
+    @keyframes beat { from { transform: scale(1); } to { transform: scale(1.2); } }
+    @keyframes floatAnim { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 
-        .progress-container { width: 100%; height: 35px; border: 4px solid white; padding: 4px; background: #000; box-shadow: 0 0 15px rgba(255, 77, 109, 0.3); }
-        .progress-bar { width: 0%; height: 100%; background-color: #ff4d6d; }
+    .blink { animation: blink 0.8s infinite; font-size: 0.55rem; color: #ffb3c1; margin-top: 20px; }
+    @keyframes blink { 50% { opacity: 0; } }
 
-        .btn { font-family: 'Press Start 2P', cursive; padding: 20px; width: 240px; border: 4px solid #fff; background: #2b0202; color: white; font-size: 0.7rem; box-shadow: 6px 6px 0px #000; cursor: pointer; margin: 10px; }
-        .btn:active { box-shadow: 0px 0px 0px #000; transform: translate(6px, 6px); }
+    .loading-text { font-size: 0.5rem; margin-bottom: 15px; color: #ffb3c1; line-height: 2; }
+    .progress-container { width: 100%; height: 30px; border: 4px solid white; padding: 3px; background: #000; box-shadow: 0 0 20px rgba(255,77,109,0.4); }
+    .progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #ff4d6d, #ff85a1); transition: width 0.04s linear; }
 
-        #final-screen h1 { font-size: 0.85rem; line-height: 2.5; color: #ffb3c1; text-shadow: 2px 2px #000; }
+    .btn {
+        font-family: 'Press Start 2P', cursive;
+        padding: 16px 20px; min-width: 200px;
+        border: 4px solid #fff; background: #2b0202;
+        color: white; font-size: 0.65rem;
+        box-shadow: 6px 6px 0px #000;
+        cursor: pointer; margin: 8px;
+        transition: none;
+    }
+    .btn:active { box-shadow: 0px 0px 0px #000; transform: translate(6px, 6px); }
+    .btn.yes { background: #7a0020; border-color: #ff4d6d; color: #ffb3c1; }
+    .btn.yes:hover { background: #a3002a; }
 
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            20% { transform: translate(-3px, 0px) rotate(-1deg); }
-            40% { transform: translate(3px, 2px) rotate(1deg); }
-            60% { transform: translate(1px, -1px) rotate(1deg); }
-            80% { transform: translate(-1px, 2px) rotate(-1deg); }
-            100% { transform: translate(1px, -2px) rotate(0deg); }
-        }
-        .shake-screen { animation: shake 0.3s; }
+    .level-title { font-size: 0.75rem; color: #ff4d6d; margin-bottom: 6px; text-shadow: 3px 3px #000; }
+    .level-desc  { font-size: 0.45rem; color: #ffb3c1; line-height: 2; margin-bottom: 20px; }
+    .level-badge { font-size: 0.4rem; color: #ffd700; margin-bottom: 15px; letter-spacing: 1px; }
 
-        .stats { position: absolute; bottom: 20px; left: 0; width: 100%; font-size: 0.45rem; color: #ffb3c1; opacity: 0.7; letter-spacing: 1px; }
-    </style>
+    #game-canvas-wrapper {
+        position: relative; width: 300px; height: 300px;
+        border: 4px solid #ff4d6d; background: #0a0010;
+        overflow: hidden; box-shadow: 0 0 20px rgba(255,77,109,0.5);
+    }
+    #game-canvas { width: 100%; height: 100%; display: block; }
+    .game-ui { font-size: 0.45rem; color: #ffb3c1; margin-bottom: 8px; display: flex; justify-content: space-between; width: 300px; flex-wrap: wrap; gap: 4px; }
+    .game-instructions { font-size: 0.4rem; color: #888; margin-top: 8px; line-height: 2; }
+
+    .combo-popup {
+        position: fixed; pointer-events: none; z-index: 200;
+        font-family: 'Press Start 2P', cursive;
+        font-size: 0.7rem; color: #ffd700; text-shadow: 2px 2px #000;
+        animation: comboAnim 0.8s ease-out forwards;
+    }
+    @keyframes comboAnim {
+        0%   { opacity: 1; transform: translateY(0) scale(1.2); }
+        100% { opacity: 0; transform: translateY(-50px) scale(0.8); }
+    }
+
+    #gameover-screen .go-title { font-size: 1.2rem; color: #ff4d6d; text-shadow: 4px 4px #000; margin-bottom: 20px; animation: floatAnim 1s ease-in-out infinite; }
+    #gameover-screen .go-sub   { font-size: 0.5rem; color: #ffb3c1; line-height: 2.5; margin-bottom: 25px; }
+
+    .countdown-box { background: #0a0010; border: 4px solid #ff4d6d; padding: 20px 30px; margin-bottom: 20px; box-shadow: 0 0 20px rgba(255,77,109,0.4); }
+    .countdown-title { font-size: 0.5rem; color: #ffb3c1; margin-bottom: 15px; line-height: 2; }
+    .countdown-numbers { display: flex; gap: 15px; justify-content: center; align-items: center; }
+    .countdown-unit { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .countdown-val { font-size: 1.2rem; color: #ff4d6d; text-shadow: 3px 3px #000; min-width: 2ch; }
+    .countdown-label { font-size: 0.3rem; color: #888; }
+    .countdown-sep { font-size: 1.2rem; color: #ff4d6d; margin-bottom: 15px; }
+
+    .question-text { font-size: 0.75rem; color: #ffb3c1; line-height: 2; margin-bottom: 25px; text-shadow: 2px 2px #000; }
+    #btn-no { position: relative; }
+
+    #final-screen h2 { font-size: 0.7rem; line-height: 2.5; color: #ffb3c1; text-shadow: 2px 2px #000; }
+    .fireworks-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+
+    /* Valentine's Day special */
+    #valentines-special .vday-title { font-size: 0.9rem; color: #ffd700; text-shadow: 3px 3px #000; line-height: 2; margin-bottom: 15px; animation: floatAnim 2s ease-in-out infinite; }
+    #valentines-special .vday-sub   { font-size: 0.5rem; color: #ffb3c1; line-height: 2.5; margin-bottom: 20px; }
+    .vday-badge { background: #ffd700; color: #000; padding: 8px 16px; font-size: 0.4rem; margin-bottom: 20px; box-shadow: 4px 4px #000; animation: beat 0.6s infinite alternate; display: inline-block; }
+
+    /* Achievement toast */
+    .achievement {
+        position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+        background: #1a0101; border: 3px solid #ffd700;
+        padding: 12px 20px; z-index: 500;
+        box-shadow: 4px 4px #000, 0 0 20px rgba(255,215,0,0.4);
+        animation: achieveIn 0.3s ease-out, achieveOut 0.4s ease-in 2.5s forwards;
+        white-space: nowrap;
+    }
+    .achievement .ach-label { font-size: 0.3rem; color: #ffd700; margin-bottom: 6px; }
+    .achievement .ach-title { font-size: 0.45rem; color: #fff; }
+    @keyframes achieveIn  { from { opacity:0; transform: translateX(-50%) translateY(20px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+    @keyframes achieveOut { from { opacity:1; } to { opacity:0; transform: translateX(-50%) translateY(20px); } }
+
+    .stats { position: fixed; bottom: 10px; left: 0; width: 100%; font-size: 0.38rem; color: #ff4d6d; opacity: 0.6; letter-spacing: 1px; z-index: 100; text-align: center; }
+
+    @keyframes shake {
+        0%   { transform: translate(1px,1px); }
+        20%  { transform: translate(-3px,0px); }
+        40%  { transform: translate(3px,2px); }
+        60%  { transform: translate(1px,-1px); }
+        80%  { transform: translate(-1px,2px); }
+        100% { transform: translate(0,0); }
+    }
+    .shake { animation: shake 0.3s; }
+
+    .confetti-piece { position: fixed; pointer-events: none; z-index: 50; width: 8px; height: 8px; animation: confettiFall linear forwards; }
+    @keyframes confettiFall {
+        0%   { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    @keyframes flashRed {
+        0%,100% { background-color: #1a0101; }
+        50%      { background-color: #4a0000; }
+    }
+    .flash-red { animation: flashRed 0.2s 2; }
+</style>
+```
+
 </head>
-<body onclick="startFlow()">
+<body>
 
-    <div id="hearts-container"></div>
+<div id="hearts-container"></div>
+<div class="fireworks-container" id="fireworks"></div>
 
-    <div id="start-screen" class="screen">
-        <div class="heart-icon">❤</div>
-        <h1 class="pixel-title">VALENTINE</h1>
-        <p class="blink">TOCÁ PARA EMPEZAR</p>
+<!-- START -->
+
+<div id="start-screen" class="screen active" onclick="goToLoading()">
+    <div class="heart-icon">❤</div>
+    <h1 class="pixel-title">VALENTINE<br>QUEST</h1>
+    <p class="pixel-subtitle">UNA AVENTURA PARA<br>LA GORDA MÁS LINDA</p>
+    <p class="blink">— TOCÁ PARA EMPEZAR —</p>
+</div>
+
+<!-- 14 DE FEBRERO ESPECIAL -->
+
+<div id="valentines-special" class="screen">
+    <div class="vday-badge">🌟 14 DE FEBRERO 🌟</div>
+    <div class="heart-icon">💝</div>
+    <p class="vday-title">¡FELIZ DÍA DE<br>SAN VALENTÍN!</p>
+    <p class="vday-sub">HOY ES UN DÍA<br>MUY ESPECIAL,<br>GORDA ❤</p>
+    <button class="btn yes" onclick="goToLoading()">EMPEZAR ❤</button>
+</div>
+
+<!-- LOADING -->
+
+<div id="loading-screen" class="screen">
+    <p class="loading-text" id="loading-text">CARGANDO ALGO RE LINDO<br>PARA MI GORDA MALA...</p>
+    <div class="progress-container"><div class="progress-bar" id="bar"></div></div>
+    <p class="blink" style="margin-top:15px; font-size:0.4rem;">◆ ◆ ◆</p>
+</div>
+
+<!-- NIVEL 1: Trivia -->
+
+<div id="level1-screen" class="screen">
+    <p class="level-badge">⭐ NIVEL 1 DE 3 ⭐</p>
+    <p class="level-title">MISIÓN: TRIVIA</p>
+    <p class="level-desc">DEMOSTRÁ QUE SABÉS<br>ALGO DE DYLAN</p>
+    <div id="trivia-container"></div>
+</div>
+
+<!-- NIVEL 2: Mini juego -->
+
+<div id="level2-screen" class="screen">
+    <p class="level-badge">⭐ NIVEL 2 DE 3 ⭐</p>
+    <p class="level-title">MISIÓN: ATRAPAR ❤</p>
+    <p class="level-desc" style="margin-bottom:8px;">ATRAPÁ 10 CORAZONES<br>¡EVITÁ LAS BOMBAS 💣!</p>
+    <div class="game-ui">
+        <span>SCORE: <span id="score">0</span>/10</span>
+        <span>COMBO: <span id="combo-display">x1</span></span>
+        <span>VIDAS: <span id="lives">❤❤❤</span></span>
     </div>
+    <div id="game-canvas-wrapper">
+        <canvas id="game-canvas" width="300" height="300"></canvas>
+    </div>
+    <p class="game-instructions">TOCÁ LOS ❤ · ESQUIVÁ LAS 💣</p>
+</div>
 
-    <div id="loading-screen" class="screen">
-        <p style="font-size: 0.55rem; margin-bottom: 15px;">CARGANDO ALGO RE LINDO PARA MI GORDA...</p>
-        <div class="progress-container">
-            <div class="progress-bar" id="bar"></div>
+<!-- GAME OVER -->
+
+<div id="gameover-screen" class="screen">
+    <p class="go-title">GAME OVER</p>
+    <p class="go-sub">SE TE ESCAPARON<br>TODOS LOS CORAZONES...<br>IGUAL TE AMO, GORDA 💀❤</p>
+    <button class="btn yes" onclick="restartGame()">REINTENTAR ❤</button>
+</div>
+
+<!-- NIVEL 3: Contador -->
+
+<div id="level3-screen" class="screen">
+    <p class="level-badge">⭐ NIVEL 3 DE 3 ⭐</p>
+    <p class="level-title">NUESTRA HISTORIA</p>
+    <p class="level-desc">JUNTOS DESDE EL<br>10 DE MAYO DE 2023</p>
+    <div class="countdown-box">
+        <p class="countdown-title">💕 TIEMPO JUNTOS 💕</p>
+        <div class="countdown-numbers">
+            <div class="countdown-unit">
+                <span class="countdown-val" id="cd-years">0</span>
+                <span class="countdown-label">AÑOS</span>
+            </div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit">
+                <span class="countdown-val" id="cd-months">0</span>
+                <span class="countdown-label">MESES</span>
+            </div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit">
+                <span class="countdown-val" id="cd-days">0</span>
+                <span class="countdown-label">DÍAS</span>
+            </div>
         </div>
     </div>
+    <button class="btn yes" onclick="goToQuestion()">SEGUIR ❤</button>
+</div>
 
-    <div id="question-screen" class="screen">
-        <h2 style="font-size: 0.8rem; line-height: 1.5;">¿QUERÉS SER MI SAN VALENTINE?</h2>
-        <button class="btn" onclick="sayYes(event)">SÍ, OBVIO</button>
-        <button class="btn" id="btn-no" onclick="moveNo(event)" onmouseover="moveNo(event)">NO</button>
-    </div>
+<!-- PREGUNTA -->
 
-    <div id="final-screen" class="screen">
-        <div class="heart-icon" style="font-size: 80px;">❤</div>
-        <h1 id="typewriter"></h1>
-    </div>
+<div id="question-screen" class="screen">
+    <div class="heart-icon" style="font-size:40px;">❤</div>
+    <p class="question-text">¿QUERÉS SER MI<br>SAN VALENTINE,<br>GORDA MALA?</p>
+    <button class="btn yes" onclick="sayYes(event)">SÍ, OBVIO 💖</button>
+    <button class="btn" id="btn-no" onclick="moveNo(event)" onmouseover="moveNo(event)">NO</button>
+    <p style="font-size:0.38rem; color:#555; margin-top:15px;">INTENTOS DE "NO": <span id="no-counter">0</span></p>
+</div>
 
-    <div class="stats">P1: DYLAN | P2: GORDA</div>
+<!-- FINAL -->
 
-    <script>
-        let audioCtx;
-        let step = 0;
+<div id="final-screen" class="screen">
+    <div class="heart-icon" style="font-size:70px; margin-bottom:10px;">❤</div>
+    <h2 id="typewriter"></h2>
+</div>
 
-        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+<div class="stats">P1: DYLAN ❤ P2: AGUSTINA | JUNTOS DESDE 10/05/2023</div>
 
-        function playBlip() {
-            if (!audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+<script>
+// ─── AUDIO ─────────────────────────────────────────────────────────────────
+let audioCtx;
+function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+function playNote(freq, start, dur, type='square', vol=0.04) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime + start);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + start + dur);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime + start);
+    osc.stop(audioCtx.currentTime + start + dur + 0.01);
+}
+function playBlip()    { playNote(440,0,0.08); playNote(880,0.05,0.08); }
+function playError()   { playNote(220,0,0.15); playNote(180,0.1,0.2); }
+function playCorrect() { playNote(523,0,0.1); playNote(659,0.1,0.1); playNote(783,0.2,0.15); }
+function playCatch()   { playNote(660,0,0.06); playNote(880,0.05,0.08); }
+function playCombo()   { playNote(880,0,0.06); playNote(1100,0.05,0.08); playNote(1320,0.1,0.1); }
+function playBomb()    { playNote(150,0,0.08); playNote(100,0.05,0.15,'sawtooth'); }
+function playMiss()    { playNote(200,0,0.1); }
+function playGameOver(){ playNote(392,0,0.2); playNote(349,0.2,0.2); playNote(330,0.4,0.2); playNote(294,0.6,0.4); }
+
+// BGM Zelda-like
+let bgmInterval;
+function startBGM() {
+    if (!audioCtx) return;
+    const p = [[392,0,0.18],[440,0.2,0.18],[494,0.4,0.18],[523,0.6,0.25],[494,0.9,0.18],[440,1.1,0.18],[392,1.3,0.35],[349,1.7,0.18],[392,1.9,0.18],[440,2.1,0.18],[494,2.3,0.25],[440,2.6,0.18],[392,2.8,0.18],[349,3.0,0.35]];
+    function loop() { p.forEach(([f,t,d]) => playNote(f,t,d,'triangle',0.03)); }
+    loop(); bgmInterval = setInterval(loop, 3600);
+}
+function stopBGM() { clearInterval(bgmInterval); }
+
+// Música final festiva
+function playFinalMusic() {
+    if (!audioCtx) return;
+    const m = [523,659,783,1046,783,659,523,523,659,783,880,783,659,523,659,783,1046,1046,880,783,659,523,659,0,784,880,1046,1174,1046,880,784,784,880,1046,1174,1174,1046,880,784,659,784,0,1046,1046,880,784,659,523];
+    let t=0;
+    m.forEach(f => { if(f>0) playNote(f,t,0.10,'square',0.05); t+=0.12; });
+}
+
+// ─── LOGROS ────────────────────────────────────────────────────────────────
+function showAchievement(icon, title) {
+    const el = document.createElement('div');
+    el.className = 'achievement';
+    el.innerHTML = `<div class="ach-label">🏆 LOGRO DESBLOQUEADO</div><div class="ach-title">${icon} ${title}</div>`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+}
+
+// ─── CORAZONES BG ──────────────────────────────────────────────────────────
+function createHeart(isExplosion=false, x, y) {
+    const h = document.createElement('div');
+    h.className = 'heart-bg';
+    h.innerHTML = Math.random()>0.5 ? '❤' : '💕';
+    if (isExplosion && x!==undefined) {
+        h.style.left=x+'px'; h.style.top=y+'px';
+        const angle=Math.random()*Math.PI*2, v=Math.random()*200+80;
+        h.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${Math.cos(angle)*v}px,${Math.sin(angle)*v}px) scale(0)`,opacity:0}],{duration:1200,easing:'ease-out'});
+        document.getElementById('hearts-container').appendChild(h);
+        setTimeout(()=>h.remove(),1300);
+    } else {
+        h.style.left=Math.random()*95+'vw';
+        h.style.animationDuration=(Math.random()*3+3)+'s';
+        h.style.animationDelay=(Math.random()*2)+'s';
+        h.style.fontSize=(Math.random()*16+10)+'px';
+        document.getElementById('hearts-container').appendChild(h);
+        setTimeout(()=>h.remove(),6000);
+    }
+}
+setInterval(()=>createHeart(false),600);
+
+// ─── CONFETTI ──────────────────────────────────────────────────────────────
+function launchConfetti() {
+    const colors=['#ff4d6d','#ffb3c1','#ffd700','#ff85a1','#fff'];
+    for(let i=0;i<120;i++) setTimeout(()=>{
+        const c=document.createElement('div');
+        c.className='confetti-piece';
+        c.style.left=Math.random()*100+'vw'; c.style.top='-10px';
+        c.style.background=colors[Math.floor(Math.random()*colors.length)];
+        c.style.animationDuration=(Math.random()*3+2)+'s';
+        c.style.animationDelay=(Math.random()*2)+'s';
+        c.style.borderRadius=Math.random()>0.5?'50%':'0';
+        document.getElementById('fireworks').appendChild(c);
+        setTimeout(()=>c.remove(),5000);
+    },i*30);
+}
+
+// ─── PANTALLAS ─────────────────────────────────────────────────────────────
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+// ─── INICIO ────────────────────────────────────────────────────────────────
+window.addEventListener('load',()=>{
+    const now=new Date();
+    if(now.getMonth()===1 && now.getDate()===14) {
+        showScreen('valentines-special');
+        for(let i=0;i<30;i++) setTimeout(()=>createHeart(false),i*100);
+    }
+});
+
+function goToLoading() {
+    initAudio(); startBGM(); playBlip();
+    showScreen('loading-screen');
+    let w=0;
+    const bar=document.getElementById('bar'), txt=document.getElementById('loading-text');
+    const iv=setInterval(()=>{
+        w++; bar.style.width=w+'%';
+        if(w===25)  { txt.innerHTML='CARGANDO RECUERDOS<br>DE LA GORDA MALA...'; playBlip(); }
+        if(w===50)  { txt.innerHTML='INSTALANDO<br>CORAZONES PIXELADOS...'; playBlip(); }
+        if(w===75)  { txt.innerHTML='CASI LISTO...<br>AGUANTÁ GORDITA ❤'; playBlip(); }
+        if(w>=100)  { clearInterval(iv); txt.innerHTML='¡LISTO! ❤'; playBlip(); setTimeout(()=>{ showScreen('level1-screen'); buildTrivia(); },600); }
+    },35);
+}
+
+// ─── NIVEL 1: TRIVIA ───────────────────────────────────────────────────────
+const triviaQ=[
+    {q:"¿CÓMO LE DICE DYLAN\nA AGUSTINA?",opts:["FLACA","PRECIOSA","GORDA","AMORCITO"],ans:2},
+    {q:"¿DESDE QUÉ MES\nESTÁN JUNTOS?",opts:["MARZO","MAYO","JULIO","ENERO"],ans:1},
+    {q:"¿EN QUÉ AÑO\nSE JUNTARON?",opts:["2020","2021","2022","2023"],ans:3}
+];
+let triviaIdx=0;
+function buildTrivia(){ triviaIdx=0; renderTrivia(); }
+function renderTrivia(){
+    const q=triviaQ[triviaIdx];
+    document.getElementById('trivia-container').innerHTML=`
+        <p style="font-size:0.45rem;color:#ffd700;margin-bottom:8px;">PREGUNTA ${triviaIdx+1} DE ${triviaQ.length}</p>
+        <p style="font-size:0.55rem;color:#ffb3c1;line-height:2;margin-bottom:20px;white-space:pre-line;">${q.q}</p>
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;">
+            ${q.opts.map((o,i)=>`<button class="btn" style="min-width:130px;padding:12px;" onclick="answerTrivia(${i})">${o}</button>`).join('')}
+        </div>
+        <div id="trivia-feedback" style="height:30px;margin-top:10px;font-size:0.45rem;"></div>`;
+}
+function answerTrivia(idx){
+    const q=triviaQ[triviaIdx];
+    const fb=document.getElementById('trivia-feedback');
+    document.querySelectorAll('#trivia-container .btn').forEach(b=>b.disabled=true);
+    if(idx===q.ans){
+        playCorrect(); fb.style.color='#4dff91'; fb.textContent='✔ ¡CORRECTO! ❤';
+        setTimeout(()=>{
+            triviaIdx++;
+            if(triviaIdx<triviaQ.length){ renderTrivia(); }
+            else { showAchievement('🧠','¡SABELOTODO!'); setTimeout(()=>{ showScreen('level2-screen'); startGame(); },1200); }
+        },900);
+    } else {
+        playError();
+        document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'),300);
+        fb.style.color='#ff4d6d'; fb.textContent='✘ ¡GORDA MALA! INTENTÁ DE NUEVO';
+        setTimeout(()=>renderTrivia(),900);
+    }
+}
+
+// ─── NIVEL 2: MINI JUEGO ───────────────────────────────────────────────────
+const canvas=document.getElementById('game-canvas'), ctx=canvas.getContext('2d');
+let score=0, lives=3, gameRunning=false, fallingObjects=[], gameLoopId, spawnTimer=0, combo=0, speedMultiplier=1.0;
+
+function startGame(){
+    score=0; lives=3; fallingObjects=[]; gameRunning=true; combo=0; speedMultiplier=1.0; spawnTimer=0;
+    document.getElementById('score').textContent='0';
+    document.getElementById('combo-display').textContent='x1';
+    updateLives(); clearInterval(gameLoopId);
+    gameLoopId=setInterval(updateGame,1000/30);
+    canvas.onclick=handleClick; canvas.ontouchstart=handleTouch;
+}
+function restartGame(){ showScreen('level2-screen'); startGame(); }
+
+function FallingObj(isBomb){
+    this.x=Math.random()*260+20; this.y=-25;
+    this.speed=(Math.random()*3.5+4)*speedMultiplier;
+    this.size=Math.random()*14+18; this.isBomb=isBomb;
+    this.wobble=Math.random()*Math.PI*2;
+    this.color=isBomb?'#555':['#ff4d6d','#ff85a1','#ffd700','#ff1744'][Math.floor(Math.random()*4)];
+}
+
+function spawnObj(){
+    const bombChance=Math.min(0.35,0.15+score*0.02);
+    fallingObjects.push(new FallingObj(Math.random()<bombChance));
+}
+
+function drawHeart(x,y,size,color){
+    ctx.save(); ctx.fillStyle=color; ctx.shadowColor=color; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.moveTo(x,y+size*0.3);
+    ctx.bezierCurveTo(x,y,x-size*0.5,y,x-size*0.5,y+size*0.3);
+    ctx.bezierCurveTo(x-size*0.5,y+size*0.6,x,y+size*0.9,x,y+size);
+    ctx.bezierCurveTo(x,y+size*0.9,x+size*0.5,y+size*0.6,x+size*0.5,y+size*0.3);
+    ctx.bezierCurveTo(x+size*0.5,y,x,y,x,y+size*0.3); ctx.fill(); ctx.restore();
+}
+
+function drawBomb(x,y,size){
+    ctx.save(); ctx.font=`${size*1.1}px serif`; ctx.textAlign='center';
+    ctx.fillText('💣',x,y+size); ctx.restore();
+}
+
+function updateGame(){
+    if(!gameRunning) return;
+    ctx.clearRect(0,0,300,300);
+    ctx.strokeStyle='rgba(255,77,109,0.07)'; ctx.lineWidth=1;
+    for(let i=0;i<300;i+=30){
+        ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,300); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(300,i); ctx.stroke();
+    }
+    speedMultiplier=1.0+score*0.07;
+    spawnTimer++;
+    if(spawnTimer>Math.max(20,40-score*2)){ spawnObj(); spawnTimer=0; }
+    for(let i=fallingObjects.length-1;i>=0;i--){
+        const o=fallingObjects[i];
+        o.y+=o.speed; o.wobble+=0.05;
+        const wx=o.x+Math.sin(o.wobble)*3;
+        if(o.isBomb) drawBomb(wx,o.y,o.size);
+        else         drawHeart(wx,o.y,o.size,o.color);
+        if(o.y>315){
+            fallingObjects.splice(i,1);
+            if(!o.isBomb){
+                lives--; combo=0;
+                document.getElementById('combo-display').textContent='x1';
+                playMiss(); updateLives();
+                document.body.classList.add('flash-red');
+                setTimeout(()=>document.body.classList.remove('flash-red'),400);
+                if(lives<=0){ endGame(false); return; }
+            }
         }
+    }
+}
 
-        function playWin() {
-            const notes = [523, 659, 783, 1046, 1318];
-            notes.forEach((freq, i) => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (i * 0.1));
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime + (i * 0.1));
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.start(audioCtx.currentTime + (i * 0.1)); osc.stop(audioCtx.currentTime + (i * 0.1) + 0.3);
-            });
-        }
+function updateLives(){
+    document.getElementById('lives').textContent=['','❤','❤❤','❤❤❤'][Math.max(0,lives)]||'💀';
+}
 
-        function createHeart(isExplosion = false) {
-            const heart = document.createElement('div');
-            heart.className = 'heart-bg';
-            heart.innerHTML = '❤';
-            if(isExplosion) {
-                heart.style.left = '50vw'; heart.style.top = '50vh';
-                const angle = Math.random() * Math.PI * 2;
-                const velocity = Math.random() * 200 + 100;
-                heart.animate([
-                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-                    { transform: `translate(${Math.cos(angle)*velocity}px, ${Math.sin(angle)*velocity}px) scale(0)`, opacity: 0 }
-                ], { duration: 1500, easing: 'ease-out' });
+function handleClick(e){
+    const r=canvas.getBoundingClientRect();
+    checkHit((e.clientX-r.left)*(300/r.width),(e.clientY-r.top)*(300/r.height));
+}
+function handleTouch(e){
+    e.preventDefault(); const r=canvas.getBoundingClientRect(), t=e.touches[0];
+    checkHit((t.clientX-r.left)*(300/r.width),(t.clientY-r.top)*(300/r.height));
+}
+
+function checkHit(cx,cy){
+    for(let i=fallingObjects.length-1;i>=0;i--){
+        const o=fallingObjects[i], wx=o.x+Math.sin(o.wobble)*3;
+        if(Math.hypot(cx-wx,cy-(o.y+o.size*0.5))<o.size*0.9){
+            fallingObjects.splice(i,1);
+            if(o.isBomb){
+                lives--; combo=0;
+                document.getElementById('combo-display').textContent='x1';
+                playBomb(); updateLives();
+                document.body.classList.add('shake','flash-red');
+                setTimeout(()=>document.body.classList.remove('shake','flash-red'),400);
+                if(lives<=0){ endGame(false); return; }
             } else {
-                heart.style.left = Math.random() * 95 + 'vw';
-                heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                combo++; score++;
+                document.getElementById('score').textContent=score;
+                if(combo>=3){ playCombo(); showComboPopup(combo); }
+                else          playCatch();
+                document.getElementById('combo-display').textContent='x'+combo;
+                const r=canvas.getBoundingClientRect();
+                createHeart(true,r.left+wx/(300/r.width),r.top+(o.y+o.size*0.5)/(300/r.height));
+                if(score>=10){ endGame(true); return; }
             }
-            document.getElementById('hearts-container').appendChild(heart);
-            setTimeout(() => heart.remove(), 4000);
+            break;
         }
-        setInterval(() => createHeart(false), 500);
+    }
+}
 
-        function startFlow() {
-            if (step !== 0) return;
-            initAudio(); step = 1; playBlip();
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('loading-screen').style.display = 'block';
-            let bar = document.getElementById('bar');
-            let width = 0;
-            let interval = setInterval(() => {
-                width++; bar.style.width = width + '%';
-                if (width % 25 === 0) playBlip();
-                if (width >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        document.getElementById('loading-screen').style.display = 'none';
-                        document.getElementById('question-screen').style.display = 'block';
-                    }, 500);
-                }
-            }, 40);
-        }
+function showComboPopup(n){
+    const el=document.createElement('div'); el.className='combo-popup';
+    el.textContent='COMBO x'+n+'!';
+    el.style.left=(Math.random()*40+30)+'vw'; el.style.top=(Math.random()*30+20)+'vh';
+    document.body.appendChild(el); setTimeout(()=>el.remove(),900);
+}
 
-        let phraseIndex = 0;
-        const phrases = ["¿SEGURA?", "GORDA MALA", "¡DALE CHE! 🥺", "DALE PONÉ QUE SÍ", "¿POSTA?", "NI EN PEDO", "¡DALEE!"];
+function endGame(win){
+    gameRunning=false; clearInterval(gameLoopId);
+    canvas.onclick=null; canvas.ontouchstart=null;
+    if(win){ playCorrect(); showAchievement('❤','¡ATRAPADORA DE CORAZONES!'); setTimeout(()=>{ showScreen('level3-screen'); buildCountdown(); },1200); }
+    else   { playGameOver(); setTimeout(()=>showScreen('gameover-screen'),800); }
+}
 
-        function moveNo(e) {
-            e.stopPropagation();
-            playBlip();
-            document.body.classList.add('shake-screen');
-            setTimeout(() => document.body.classList.remove('shake-screen'), 300);
+// ─── NIVEL 3: CONTADOR ─────────────────────────────────────────────────────
+function buildCountdown(){
+    const start=new Date(2023,4,10), now=new Date();
+    let years=now.getFullYear()-start.getFullYear();
+    let months=now.getMonth()-start.getMonth();
+    let days=now.getDate()-start.getDate();
+    if(days<0){ months--; days+=new Date(now.getFullYear(),now.getMonth(),0).getDate(); }
+    if(months<0){ years--; months+=12; }
+    document.getElementById('cd-years').textContent=years;
+    document.getElementById('cd-months').textContent=months;
+    document.getElementById('cd-days').textContent=days;
+    showAchievement('📅','¡HISTORIADORES DEL AMOR!');
+}
+function goToQuestion(){ playBlip(); showScreen('question-screen'); }
 
-            const btnNo = document.getElementById('btn-no');
-            const maxX = window.innerWidth - btnNo.offsetWidth - 20;
-            const maxY = window.innerHeight - btnNo.offsetHeight - 20;
-            btnNo.style.position = 'fixed';
-            btnNo.style.left = Math.max(10, Math.floor(Math.random() * maxX)) + 'px';
-            btnNo.style.top = Math.max(10, Math.floor(Math.random() * maxY)) + 'px';
-            
-            btnNo.innerText = phrases[phraseIndex];
-            phraseIndex = (phraseIndex + 1) % phrases.length;
-        }
+// ─── PREGUNTA ──────────────────────────────────────────────────────────────
+let noCount=0;
+const noPhases=["GORDA MALA","GORDA MALVADA","PONÉ QUE SÍ","TE KGO A PALO","DALE :(","GORDA MALA!!","EN SERIO PONÉ SÍ","TE KGO A PALO >:(","DALE GORDIIII :(",  "ÚLTIMA VEZ... PONÉ SÍ","GORDAAAAA :(","YA SÉ QUE SÍ 😏"];
 
-        function sayYes(e) {
-            e.stopPropagation();
-            playWin();
-            document.getElementById('question-screen').style.display = 'none';
-            document.getElementById('final-screen').style.display = 'block';
-            
-            const text = "SABÍA QUE IBAS A DECIR QUE SÍ...\n\n💖 TE AMO UN MONTÓN 💖";
-            let i = 0;
-            function typeWriter() {
-                if (i < text.length) {
-                    document.getElementById("typewriter").innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
-                    i++;
-                    setTimeout(typeWriter, 50);
-                }
-            }
-            typeWriter();
-            for(let i=0; i<150; i++) setTimeout(() => createHeart(true), i * 15);
-        }
-    </script>
+function moveNo(e){
+    e.stopPropagation(); playBlip();
+    document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'),300);
+    noCount++; document.getElementById('no-counter').textContent=noCount;
+    const btn=document.getElementById('btn-no');
+    btn.style.position='fixed';
+    btn.style.left=Math.max(10,Math.floor(Math.random()*(window.innerWidth-btn.offsetWidth-10)))+'px';
+    btn.style.top=Math.max(10,Math.floor(Math.random()*(window.innerHeight-btn.offsetHeight-10)))+'px';
+    btn.textContent=noPhases[noCount%noPhases.length];
+}
+
+function getFinalLines(){
+    const t=getYearsMonths();
+    if(noCount===0) return ["SABÍA QUE IBAS","A DECIR QUE SÍ","SIN DUDAR ❤","","💖 TE AMO UN","MONTÓN, GORDA 💖","","GRACIAS POR","ESTOS "+t,"JUNTOS ❤"];
+    if(noCount<=3)  return ["DUDASTE UN POCO...","PERO AL FINAL","DIJISTE QUE SÍ ❤","","💖 TE AMO IGUAL,","GORDA MALA 💖","","JUNTOS "+t,"Y LO QUE FALTA ❤"];
+    if(noCount<=7)  return ["INTENTASTE "+noCount+" VECES","DECIR QUE NO...","¡GORDA MALVADA! 😂","","IGUAL TE AMO 💖","PORQUE SOS MÍA","Y YO SOY TUYO ❤","","JUNTOS "+t+" ❤"];
+    return ["¡"+noCount+" VECES!!!","GORDA MALA DE VERDAD","JAJAJAJAJA 💀","","PERO IGUAL DIJISTE","QUE SÍ AL FINAL","¡SABÍA QUE SÍ! 💖","","TE AMO GORDA ❤"];
+}
+
+function sayYes(e){
+    e.stopPropagation(); stopBGM(); playFinalMusic(); launchConfetti();
+    for(let i=0;i<200;i++) setTimeout(()=>createHeart(false),i*20);
+    showScreen('final-screen'); showAchievement('💍','¡MI SAN VALENTINE!');
+    const lines=getFinalLines(), el=document.getElementById('typewriter');
+    let li=0, ci=0;
+    function type(){
+        if(li>=lines.length) return;
+        const line=lines[li];
+        if(ci<line.length){ el.innerHTML+=line[ci]===' '?'&nbsp;':line[ci]; ci++; setTimeout(type,55); }
+        else { el.innerHTML+='<br>'; li++; ci=0; setTimeout(type,lines[li]===''?200:80); }
+    }
+    type();
+}
+
+function getYearsMonths(){
+    const start=new Date(2023,4,10), now=new Date();
+    let years=now.getFullYear()-start.getFullYear();
+    let months=now.getMonth()-start.getMonth();
+    if(now.getDate()<10) months--;
+    if(months<0){ years--; months+=12; }
+    if(years===0) return months+' MESES';
+    return years+' AÑO'+(years>1?'S':'')+(months>0?' Y '+months+' MES'+(months>1?'ES':''):'');
+}
+</script>
+
 </body>
 </html>
