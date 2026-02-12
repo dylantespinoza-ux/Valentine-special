@@ -95,19 +95,11 @@
             border-radius: 12px;
             overflow: hidden;
             position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 80px;
         }
-
-        .foto-pareja {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0; left: 0;
-            opacity: 0;
-            transition: opacity 1.2s;
-        }
-
-        .foto-pareja.activa { opacity: 1; }
 
         #texto-maquina {
             font-size: 16.5px;
@@ -182,7 +174,7 @@
 
     <div id="carta">
         <div class="foto-wrapper" id="slideshow">
-            <img src="https://via.placeholder.com/340x220/ff69b4/ffffff?text=Nosotros+💕" alt="Nosotros" class="foto-pareja activa">
+            🐱💕🐈
         </div>
         
         <div id="texto-maquina" aria-live="polite"></div>
