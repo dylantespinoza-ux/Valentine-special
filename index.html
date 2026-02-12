@@ -20,6 +20,16 @@
             touch-action: manipulation;
         }
 
+        #corazones-fondo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
         .corazon-flotante {
             position: absolute;
             font-size: 1.2rem;
@@ -104,194 +114,4 @@
         #texto-maquina {
             font-size: 16.5px;
             color: #590d22;
-            font-weight: bold;
-            min-height: 100px;
-            margin: 0 0 25px;
-            line-height: 1.5;
-        }
-
-        .botones { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; }
-
-        button {
-            padding: 14px 36px;
-            font-size: 1.15rem;
-            font-weight: bold;
-            border: 3px solid black;
-            cursor: pointer;
-            border-radius: 14px;
-            transition: all 0.2s;
-        }
-
-        #btnSi {
-            background: #70e000;
-            box-shadow: 0 6px 0 #38b000;
-            color: white;
-            animation: latir 1.4s infinite ease-in-out;
-        }
-
-        #btnSi:hover { transform: scale(1.12); }
-
-        @keyframes latir {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.09); }
-        }
-
-        #btnNo {
-            background: #ff4d6d;
-            box-shadow: 0 6px 0 #c9184a;
-            color: white;
-        }
-
-        .particula {
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            font-size: 2rem;
-            animation: volar 1.4s forwards;
-        }
-
-        @keyframes volar { to { transform: translate(var(--x), var(--y)) scale(0.1) rotate(720deg); opacity: 0; } }
-
-        #final h2 { font-size: 2.2rem; color: #ff4d6d; margin: 20px 0; }
-
-        .abierto .panel-izq { transform: translateX(-100%); }
-        .abierto .panel-der { transform: translateX(100%); }
-        .abierto .texto-telon { opacity: 0; }
-    </style>
-</head>
-<body>
-
-    <div id="corazones-fondo"></div>
-
-    <div id="telon">
-        <div class="panel panel-izq"></div>
-        <div class="texto-telon">
-            <h1>¿VALENTINE?</h1>
-            <p style="font-size: 1.4rem; margin-top: 15px;">Toca para abrir mi amor ❤️</p>
-        </div>
-        <div class="panel panel-der"></div>
-    </div>
-
-    <div id="carta">
-        <div class="foto-wrapper" id="slideshow">
-            🐱💕🐈
-        </div>
-        
-        <div id="texto-maquina" aria-live="polite"></div>
-        
-        <div class="botones">
-            <button id="btnSi">SÍ</button>
-            <button id="btnNo">NO</button>
-        </div>
-    </div>
-
-    <div id="final" style="display:none;">
-        <h2>¡Sabía que dirías que SÍ! 💍❤️</h2>
-        <p style="font-size: 1.3rem; color: #590d22; margin: 20px 0;">
-            Sos lo más hermoso que me pasó en la vida.<br>
-            Te amo infinitamente, mi gorda preciosa 💕<br>
-            Siempre juntos ♾️
-        </p>
-    </div>
-
-    <script>
-        const telon = document.getElementById('telon');
-        const carta = document.getElementById('carta');
-        const finalScreen = document.getElementById('final');
-        const textoDiv = document.getElementById('texto-maquina');
-        const btnSi = document.getElementById('btnSi');
-        const btnNo = document.getElementById('btnNo');
-
-        const mensaje = "¿Querés ser mi VALENTINE? Sos la MEJOR persona del mundo. Te amo infinitamente 💕";
-        const frasesNo = ["¿Segura? 🥺", "Piénsalo bien mi amor...", "¡Me rompes el corazoncito!", "No podés decirme que no...", "¡Epa! Te quiero igual 😭💕"];
-        let yaAbierto = false;
-        let movimientosNo = 0;
-        const MAX_MOVIMIENTOS = 7;
-
-        function crearCorazones() {
-            const container = document.getElementById('corazones-fondo');
-            for (let i = 0; i < 15; i++) {
-                const corazon = document.createElement('div');
-                corazon.classList.add('corazon-flotante');
-                corazon.textContent = ['❤️','💗','💖'][Math.floor(Math.random()*3)];
-                corazon.style.left = Math.random() * 100 + 'vw';
-                corazon.style.animationDuration = (10 + Math.random() * 10) + 's';
-                corazon.style.animationDelay = Math.random() * 5 + 's';
-                container.appendChild(corazon);
-            }
-        }
-
-        function abrirTodo(e) {
-            if (yaAbierto) return;
-            yaAbierto = true;
-            e.preventDefault();
-
-            telon.classList.add('abierto');
-            carta.classList.add('mostrar');
-
-            let i = 0;
-            textoDiv.textContent = "";
-            function escribir() {
-                if (i < mensaje.length) {
-                    textoDiv.textContent += mensaje[i++];
-                    setTimeout(escribir, 45);
-                }
-            }
-            setTimeout(escribir, 800);
-        }
-
-        function moverNo(e) {
-            e.preventDefault();
-            if (movimientosNo >= MAX_MOVIMIENTOS) return;
-            movimientosNo++;
-
-            const maxX = window.innerWidth - btnNo.offsetWidth - 40;
-            const maxY = window.innerHeight - btnNo.offsetHeight - 40;
-            const x = Math.random() * maxX;
-            const y = Math.random() * maxY;
-
-            btnNo.style.position = "fixed";
-            btnNo.style.left = `${x}px`;
-            btnNo.style.top = `${y}px`;
-            btnNo.textContent = frasesNo[Math.floor(Math.random() * frasesNo.length)];
-        }
-
-        function celebrar(e) {
-            e.preventDefault();
-            const touch = e.touches?.[0] ?? e;
-            const x = touch?.clientX ?? window.innerWidth / 2;
-            const y = touch?.clientY ?? window.innerHeight / 2;
-
-            const iconos = ["❤️","💗","💖","✨","🌸","🥰","💕"];
-            for (let i = 0; i < 60; i++) {
-                const p = document.createElement('div');
-                p.textContent = iconos[Math.floor(Math.random() * iconos.length)];
-                p.classList.add('particula');
-                p.style.left = `${x}px`;
-                p.style.top = `${y}px`;
-                p.style.setProperty('--x', `${(Math.random() - 0.5) * 800}px`);
-                p.style.setProperty('--y', `${(Math.random() - 0.5) * 800}px`);
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 1600);
-            }
-
-            setTimeout(() => {
-                carta.style.display = 'none';
-                finalScreen.style.display = 'block';
-                finalScreen.classList.add('mostrar');
-            }, 1200);
-        }
-
-        crearCorazones();
-
-        telon.addEventListener('click', abrirTodo);
-        telon.addEventListener('touchstart', abrirTodo, { passive: false });
-
-        btnNo.addEventListener('pointerenter', moverNo);
-        btnNo.addEventListener('touchstart', moverNo, { passive: false });
-
-        btnSi.addEventListener('click', celebrar);
-        btnSi.addEventListener('touchstart', celebrar, { passive: false });
-    </script>
-</body>
-</html>
+            font-weight:
