@@ -14,15 +14,12 @@
             width: 100%; 
             height: 100%; 
             overflow: hidden; 
-            
-            /* FONDO MEJORADO: Bordó con cuadrícula y foco de luz */
             background-color: #4a0404;
             background-image: 
                 radial-gradient(circle, transparent 20%, #1a0101 120%),
                 linear-gradient(rgba(255, 255, 255, 0.05) 2px, transparent 2px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.05) 2px, transparent 2px);
             background-size: 100% 100%, 40px 40px, 40px 40px;
-            
             font-family: 'Press Start 2P', cursive; 
             color: white; 
             display: flex; 
@@ -31,18 +28,15 @@
             text-align: center; 
         }
 
-        /* Corazones de fondo */
         .heart-bg { position: absolute; color: #ff4d6d; font-size: 20px; z-index: 1; animation: float 4s linear infinite; pointer-events: none; }
         @keyframes float { 0% { transform: translateY(110vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; } }
 
-        /* Corazón Palpitante */
         .heart-icon { font-size: 50px; color: #ff4d6d; margin-bottom: 20px; animation: beat 0.8s infinite alternate; display: inline-block; text-shadow: 4px 4px #000; }
         @keyframes beat { from { transform: scale(1); } to { transform: scale(1.2); } }
 
         .screen { position: relative; z-index: 10; padding: 15px; width: 95%; max-width: 450px; display: none; }
         #start-screen { display: block; cursor: pointer; }
 
-        /* Título con animación de flotación */
         .pixel-title { 
             font-size: 1.8rem; 
             color: #ff4d6d; 
@@ -80,7 +74,7 @@
     <div id="start-screen" class="screen">
         <div class="heart-icon">❤</div>
         <h1 class="pixel-title">VALENTINE</h1>
-        <p class="blink">TOCÁ PARA ARRANCAR</p>
+        <p class="blink">TOCÁ PARA EMPEZAR</p>
     </div>
 
     <div id="loading-screen" class="screen">
