@@ -2,116 +2,207 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Para mi personita especial ❤️</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para mi Valentín</title>
     <style>
-        body {
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body, html {
             margin: 0;
             padding: 0;
-            background: #ff85a2;
-            background-image: radial-gradient(#ffb3c1 20%, transparent 20%);
-            background-size: 40px 40px;
-            font-family: 'Courier New', Courier, Consolas, monospace;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            touch-action: manipulation;
-        }
-
-        #corazones-fondo {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .corazon-flotante {
-            position: absolute;
-            font-size: 1.2rem;
-            color: rgba(255,105,180,0.7);
-            pointer-events: none;
-            animation: flotar linear infinite;
-            z-index: 1;
-        }
-
-        @keyframes flotar {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0.6; }
-            100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
-        }
-
-        #telon {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            display: flex;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .panel {
-            width: 50%;
-            height: 100%;
-            background: #8a0e2a;
-            transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            box-shadow: inset 0 0 120px rgba(0,0,0,0.7);
-        }
-
-        .panel-izq { border-right: 6px solid #500010; }
-        .panel-der { border-left: 6px solid #500010; }
-
-        .texto-telon {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            overflow: hidden;
+            background-color: #4a0404; /* Bordó */
+            font-family: 'Press+Start+2P', cursive;
             color: white;
-            z-index: 101;
-            pointer-events: none;
-            text-shadow: 3px 3px 12px black;
-        }
-
-        .texto-telon h1 { font-size: clamp(2.8rem, 9vw, 4.5rem); margin: 0; letter-spacing: 6px; }
-
-        #carta, #final {
-            background: white;
-            padding: 25px;
-            border: 9px solid #ff4d6d;
-            border-radius: 18px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.45);
-            max-width: 360px;
-            width: 90%;
-            z-index: 10;
-            opacity: 0;
-            transform: scale(0.7);
-            transition: all 1.2s ease 0.5s;
-            text-align: center;
-            position: relative;
-        }
-
-        .mostrar { opacity: 1; transform: scale(1); }
-
-        .foto-wrapper {
-            width: 100%;
-            height: 220px;
-            margin-bottom: 20px;
-            background: #fff0f3;
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 80px;
+            text-align: center;
         }
 
-        #texto-maquina {
-            font-size: 16.5px;
-            color: #590d22;
-            font-weight:
+        /* Corazones de fondo */
+        .heart-bg {
+            position: absolute;
+            color: #ff4d6d;
+            font-size: 20px;
+            user-select: none;
+            z-index: 0;
+            animation: float 5s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(110vh) scale(1); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+
+        /* Pantalla de Inicio */
+        #start-screen {
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        .pixel-title {
+            font-size: 3rem;
+            text-shadow: 4px 4px #000;
+            margin-bottom: 20px;
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+            font-size: 1rem;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Barra de Carga */
+        #loading-screen {
+            display: none;
+            z-index: 10;
+            width: 80%;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 30px;
+            border: 4px solid white;
+            padding: 3px;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #ff4d6d;
+        }
+
+        /* Pregunta Principal */
+        #question-screen {
+            display: none;
+            z-index: 10;
+        }
+
+        .btn {
+            font-family: 'Press+Start+2P', cursive;
+            padding: 15px 25px;
+            margin: 20px;
+            border: 4px solid white;
+            background: #800020;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn:hover { background: #ff4d6d; }
+
+        #btn-no { position: relative; }
+
+        /* Pantalla Final */
+        #final-screen {
+            display: none;
+            z-index: 20;
+        }
+
+        h1 { font-size: 1.5rem; line-height: 2; }
+    </style>
+</head>
+<body onclick="startFlow()">
+
+    <div id="hearts-container"></div>
+
+    <div id="start-screen">
+        <h1 class="pixel-title">VALENTÍN</h1>
+        <p class="blink">Presiona en cualquier lugar para comenzar</p>
+    </div>
+
+    <div id="loading-screen">
+        <p>Cargando amor...</p>
+        <div class="progress-container">
+            <div class="progress-bar" id="bar"></div>
+        </div>
+    </div>
+
+    <div id="question-screen">
+        <h2 id="main-question">¿Quieres ser mi San Valentín?</h2>
+        <button class="btn" onclick="sayYes(event)">SÍ</button>
+        <button class="btn" id="btn-no" onmouseover="moveNo()" onclick="moveNo()">NO</button>
+    </div>
+
+    <div id="final-screen">
+        <h1>¡SABÍA QUE IBAS A DECIR QUE SÍ!<br>💖 TE AMO 💖</h1>
+    </div>
+
+    <script>
+        let step = 0;
+
+        // Crear corazones de fondo
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-bg');
+            heart.innerHTML = '❤';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.getElementById('hearts-container').appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
+        }
+        setInterval(createHeart, 300);
+
+        function startFlow() {
+            if (step !== 0) return;
+            step = 1;
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('loading-screen').style.display = 'block';
+            
+            let bar = document.getElementById('bar');
+            let width = 0;
+            let interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    showQuestion();
+                } else {
+                    width++;
+                    bar.style.width = width + '%';
+                }
+            }, 30);
+        }
+
+        function showQuestion() {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('question-screen').style.display = 'block';
+        }
+
+        // El botón NO se escapa o cambia de texto
+        let noCount = 0;
+        const phrases = ["¿Estás segura?", "Piénsalo bien...", "¡Oye! 🥺", "Me vas a romper el corazón", "¡Haz clic en el SÍ!"];
+        
+        function moveNo() {
+            const btnNo = document.getElementById('btn-no');
+            const x = Math.random() * (window.innerWidth - 150);
+            const y = Math.random() * (window.innerHeight - 150);
+            
+            btnNo.style.position = 'absolute';
+            btnNo.style.left = x + 'px';
+            btnNo.style.top = y + 'px';
+            
+            if (noCount < phrases.length) {
+                btnNo.innerText = phrases[noCount];
+                noCount++;
+            }
+        }
+
+        function sayYes(event) {
+            event.stopPropagation();
+            document.getElementById('question-screen').style.display = 'none';
+            document.getElementById('final-screen').style.display = 'block';
+            
+            // Efecto explosión de corazones
+            for(let i=0; i<50; i++) {
+                setTimeout(createHeart, i * 50);
+            }
+        }
+    </script>
+</body>
+</html>
