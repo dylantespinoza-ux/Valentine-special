@@ -10,12 +10,15 @@
 
         body, html {
             width: 100%; height: 100%; overflow: hidden;
-            /* CAMBIO: Fondo Bordó Oscuro */
-            background-color: #2e0005;
+            background-color: #1a0101;
             font-family: 'Press Start 2P', cursive;
             color: white;
             display: flex; justify-content: center; align-items: center; text-align: center;
+            /* Fade in para evitar salto de fuente */
+            opacity: 0; animation: fadeInBody 0.8s forwards 0.2s;
         }
+
+        @keyframes fadeInBody { to { opacity: 1; } }
 
         body::before {
             content: "";
@@ -67,11 +70,12 @@
         .btn {
             font-family: 'Press Start 2P', cursive;
             padding: 16px 20px; min-width: 200px;
-            border: 4px solid #fff; background: #4a000e;
+            border: 4px solid #fff; background: #2b0202;
             color: white; font-size: 0.65rem;
             box-shadow: 6px 6px 0px #000;
             cursor: pointer; margin: 8px;
             transition: none;
+            user-select: none; /* Evita selección de texto al tocar rápido */
         }
         .btn:active { box-shadow: 0px 0px 0px #000; transform: translate(6px, 6px); }
         .btn.yes { background: #7a0020; border-color: #ff4d6d; color: #ffb3c1; }
@@ -81,13 +85,18 @@
         .level-desc  { font-size: 0.45rem; color: #ffb3c1; line-height: 2; margin-bottom: 20px; }
         .level-badge { font-size: 0.4rem; color: #ffd700; margin-bottom: 15px; letter-spacing: 1px; }
 
+        /* CORRECCIÓN RESPONSIVE DEL CANVAS */
         #game-canvas-wrapper {
-            position: relative; width: 300px; height: 300px;
-            border: 4px solid #ff4d6d; background: #1a0003;
+            position: relative; 
+            width: 300px; height: 300px;
+            max-width: 90vw; max-height: 90vw; /* Adaptable a pantallas chicas */
+            border: 4px solid #ff4d6d; background: #0a0010;
             overflow: hidden; box-shadow: 0 0 20px rgba(255,77,109,0.5);
+            margin: 0 auto;
         }
         #game-canvas { width: 100%; height: 100%; display: block; }
-        .game-ui { font-size: 0.45rem; color: #ffb3c1; margin-bottom: 8px; display: flex; justify-content: space-between; width: 300px; flex-wrap: wrap; gap: 4px; }
+        
+        .game-ui { font-size: 0.45rem; color: #ffb3c1; margin-bottom: 8px; display: flex; justify-content: space-between; width: 100%; max-width: 300px; flex-wrap: wrap; gap: 4px; }
         .game-instructions { font-size: 0.4rem; color: #888; margin-top: 8px; line-height: 2; }
 
         .combo-popup {
@@ -104,7 +113,7 @@
         #gameover-screen .go-title { font-size: 1.2rem; color: #ff4d6d; text-shadow: 4px 4px #000; margin-bottom: 20px; animation: floatAnim 1s ease-in-out infinite; }
         #gameover-screen .go-sub   { font-size: 0.5rem; color: #ffb3c1; line-height: 2.5; margin-bottom: 25px; }
 
-        .countdown-box { background: #1a0003; border: 4px solid #ff4d6d; padding: 20px 30px; margin-bottom: 20px; box-shadow: 0 0 20px rgba(255,77,109,0.4); }
+        .countdown-box { background: #0a0010; border: 4px solid #ff4d6d; padding: 20px 30px; margin-bottom: 20px; box-shadow: 0 0 20px rgba(255,77,109,0.4); }
         .countdown-title { font-size: 0.5rem; color: #ffb3c1; margin-bottom: 15px; line-height: 2; }
         .countdown-numbers { display: flex; gap: 15px; justify-content: center; align-items: center; }
         .countdown-unit { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -113,16 +122,18 @@
         .countdown-sep { font-size: 1.2rem; color: #ff4d6d; margin-bottom: 15px; }
 
         .question-text { font-size: 0.75rem; color: #ffb3c1; line-height: 2; margin-bottom: 25px; text-shadow: 2px 2px #000; }
-        #btn-no { position: relative; }
+        #btn-no { position: relative; z-index: 100; transition: transform 0.1s; }
 
         #final-screen h2 { font-size: 0.7rem; line-height: 2.5; color: #ffb3c1; text-shadow: 2px 2px #000; }
         .fireworks-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
 
-        /* Achievement toast */
+        #valentines-special .vday-title { font-size: 0.9rem; color: #ffd700; text-shadow: 3px 3px #000; line-height: 2; margin-bottom: 15px; animation: floatAnim 2s ease-in-out infinite; }
+        #valentines-special .vday-sub   { font-size: 0.5rem; color: #ffb3c1; line-height: 2.5; margin-bottom: 20px; }
+        .vday-badge { background: #ffd700; color: #000; padding: 8px 16px; font-size: 0.4rem; margin-bottom: 20px; box-shadow: 4px 4px #000; animation: beat 0.6s infinite alternate; display: inline-block; }
+
         .achievement {
             position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
-            /* CAMBIO: Fondo acorde al bordó */
-            background: #4a000e; border: 3px solid #ffd700;
+            background: #1a0101; border: 3px solid #ffd700;
             padding: 12px 20px; z-index: 500;
             box-shadow: 4px 4px #000, 0 0 20px rgba(255,215,0,0.4);
             animation: achieveIn 0.3s ease-out, achieveOut 0.4s ease-in 2.5s forwards;
@@ -152,14 +163,27 @@
         }
 
         @keyframes flashRed {
-            /* CAMBIO: Flash que vuelve al bordó oscuro */
-            0%,100% { background-color: #2e0005; }
-            50%      { background-color: #7a0020; }
+            0%,100% { background-color: #1a0101; }
+            50%      { background-color: #4a0000; }
         }
         .flash-red { animation: flashRed 0.2s 2; }
+
+        #stars-canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0; pointer-events: none;
+        }
+        #cats-canvas {
+            position: fixed; bottom: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 2; pointer-events: none;
+        }
     </style>
 </head>
 <body>
+
+<canvas id="stars-canvas"></canvas>
+<canvas id="cats-canvas"></canvas>
 
 <div id="hearts-container"></div>
 <div class="fireworks-container" id="fireworks"></div>
@@ -172,9 +196,10 @@
 </div>
 
 <div id="valentines-special" class="screen">
-    <div class="vday-badge" style="background: #ffd700; color: #000; padding: 8px; font-size: 0.4rem; margin-bottom: 10px;">🌟 14 DE FEBRERO 🌟</div>
+    <div class="vday-badge">🌟 14 DE FEBRERO 🌟</div>
     <div class="heart-icon">💝</div>
-    <p style="font-size: 0.9rem; color: #ffd700; text-shadow: 3px 3px #000; margin-bottom: 15px;">¡FELIZ DÍA DE<br>SAN VALENTÍN!</p>
+    <p class="vday-title">¡FELIZ DÍA DE<br>SAN VALENTÍN!</p>
+    <p class="vday-sub">HOY ES UN DÍA<br>MUY ESPECIAL,<br>GORDA ❤</p>
     <button class="btn yes" onclick="goToLoading()">EMPEZAR ❤</button>
 </div>
 
@@ -194,8 +219,10 @@
 <div id="level2-screen" class="screen">
     <p class="level-badge">⭐ NIVEL 2 DE 3 ⭐</p>
     <p class="level-title">MISIÓN: ATRAPAR ❤</p>
+    <p class="level-desc" style="margin-bottom:8px;">ATRAPÁ 10 CORAZONES<br>¡EVITÁ LAS BOMBAS 💣!</p>
     <div class="game-ui">
         <span>SCORE: <span id="score">0</span>/10</span>
+        <span>COMBO: <span id="combo-display">x1</span></span>
         <span>VIDAS: <span id="lives">❤❤❤</span></span>
     </div>
     <div id="game-canvas-wrapper">
@@ -206,66 +233,105 @@
 
 <div id="gameover-screen" class="screen">
     <p class="go-title">GAME OVER</p>
-    <p class="go-sub">SE TE ESCAPARON LOS CORAZONES...<br>IGUAL TE AMO, GORDA 💀❤</p>
+    <p class="go-sub">SE TE ESCAPARON<br>TODOS LOS CORAZONES...<br>IGUAL TE AMO, GORDA 💀❤</p>
     <button class="btn yes" onclick="restartGame()">REINTENTAR ❤</button>
 </div>
 
 <div id="level3-screen" class="screen">
     <p class="level-badge">⭐ NIVEL 3 DE 3 ⭐</p>
     <p class="level-title">NUESTRA HISTORIA</p>
+    <p class="level-desc">JUNTOS DESDE EL<br>10 DE MAYO DE 2023</p>
     <div class="countdown-box">
+        <p class="countdown-title">💕 TIEMPO JUNTOS 💕</p>
         <div class="countdown-numbers">
-            <div class="countdown-unit"><span class="countdown-val" id="cd-years">0</span><span class="countdown-label">AÑOS</span></div>
+            <div class="countdown-unit">
+                <span class="countdown-val" id="cd-years">0</span>
+                <span class="countdown-label">AÑOS</span>
+            </div>
             <span class="countdown-sep">:</span>
-            <div class="countdown-unit"><span class="countdown-val" id="cd-months">0</span><span class="countdown-label">MESES</span></div>
+            <div class="countdown-unit">
+                <span class="countdown-val" id="cd-months">0</span>
+                <span class="countdown-label">MESES</span>
+            </div>
             <span class="countdown-sep">:</span>
-            <div class="countdown-unit"><span class="countdown-val" id="cd-days">0</span><span class="countdown-label">DÍAS</span></div>
+            <div class="countdown-unit">
+                <span class="countdown-val" id="cd-days">0</span>
+                <span class="countdown-label">DÍAS</span>
+            </div>
         </div>
     </div>
     <button class="btn yes" onclick="goToQuestion()">SEGUIR ❤</button>
 </div>
 
 <div id="question-screen" class="screen">
+    <div class="heart-icon" style="font-size:40px;">❤</div>
     <p class="question-text">¿QUERÉS SER MI<br>SAN VALENTINE,<br>GORDA MALA?</p>
     <button class="btn yes" onclick="sayYes(event)">SÍ, OBVIO 💖</button>
-    <button class="btn" id="btn-no" onclick="moveNo(event)" onmouseover="moveNo(event)">NO</button>
+    <button class="btn" id="btn-no">NO</button>
+    <p style="font-size:0.38rem; color:#555; margin-top:15px;">INTENTOS DE "NO": <span id="no-counter">0</span></p>
 </div>
 
 <div id="final-screen" class="screen">
-    <div class="heart-icon" style="font-size:70px;">❤</div>
+    <div class="heart-icon" style="font-size:70px; margin-bottom:10px;">❤</div>
     <h2 id="typewriter"></h2>
 </div>
 
 <div class="stats">P1: DYLAN ❤ P2: AGUSTINA | JUNTOS DESDE 10/05/2023</div>
 
 <script>
-// --- AUDIO Y LÓGICA (Se mantiene igual para que funcione perfectamente) ---
+// ─── CONFIGURACIÓN GLOBAL ──────────────────────────────────────────────────
+// Cambia esto si quieres corregir la fecha (Mes: 0=Enero, 4=Mayo)
+const START_DATE = new Date(2023, 4, 10); 
+
+// ─── AUDIO ─────────────────────────────────────────────────────────────────
 let audioCtx;
-function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    // Fix para Chrome/Safari Mobile que bloquea el audio al inicio
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
 function playNote(freq, start, dur, type='square', vol=0.04) {
     if (!audioCtx) return;
     const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-    osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
     gain.gain.setValueAtTime(vol, audioCtx.currentTime + start);
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + start + dur);
     osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start(audioCtx.currentTime + start); osc.stop(audioCtx.currentTime + start + dur + 0.01);
+    osc.start(audioCtx.currentTime + start);
+    osc.stop(audioCtx.currentTime + start + dur + 0.01);
 }
 function playBlip()    { playNote(440,0,0.08); playNote(880,0.05,0.08); }
 function playError()   { playNote(220,0,0.15); playNote(180,0.1,0.2); }
 function playCorrect() { playNote(523,0,0.1); playNote(659,0.1,0.1); playNote(783,0.2,0.15); }
 function playCatch()   { playNote(660,0,0.06); playNote(880,0.05,0.08); }
+function playCombo()   { playNote(880,0,0.06); playNote(1100,0.05,0.08); playNote(1320,0.1,0.1); }
 function playBomb()    { playNote(150,0,0.08); playNote(100,0.05,0.15,'sawtooth'); }
+function playMiss()    { playNote(200,0,0.1); }
 function playGameOver(){ playNote(392,0,0.2); playNote(349,0.2,0.2); playNote(330,0.4,0.2); playNote(294,0.6,0.4); }
 
+// BGM
 let bgmInterval;
 function startBGM() {
     if (!audioCtx) return;
-    const p = [[392,0,0.18],[440,0.2,0.18],[494,0.4,0.18],[523,0.6,0.25],[494,0.9,0.18],[440,1.1,0.18],[392,1.3,0.35]];
+    const p = [[392,0,0.18],[440,0.2,0.18],[494,0.4,0.18],[523,0.6,0.25],[494,0.9,0.18],[440,1.1,0.18],[392,1.3,0.35],[349,1.7,0.18],[392,1.9,0.18],[440,2.1,0.18],[494,2.3,0.25],[440,2.6,0.18],[392,2.8,0.18],[349,3.0,0.35]];
     function loop() { p.forEach(([f,t,d]) => playNote(f,t,d,'triangle',0.03)); }
-    loop(); bgmInterval = setInterval(loop, 2000);
+    loop(); bgmInterval = setInterval(loop, 3600);
+}
+function stopBGM() { clearInterval(bgmInterval); }
+
+function playFinalMusic() {
+    if (!audioCtx) return;
+    const m = [523,659,783,1046,783,659,523,523,659,783,880,783,659,523,659,783,1046,1046,880,783,659,523,659,0,784,880,1046,1174,1046,880,784,784,880,1046,1174,1174,1046,880,784,659,784,0,1046,1046,880,784,659,523];
+    let t=0;
+    m.forEach(f => { if(f>0) playNote(f,t,0.10,'square',0.05); t+=0.12; });
 }
 
+// ─── LOGROS ────────────────────────────────────────────────────────────────
 function showAchievement(icon, title) {
     const el = document.createElement('div');
     el.className = 'achievement';
@@ -274,40 +340,74 @@ function showAchievement(icon, title) {
     setTimeout(() => el.remove(), 3000);
 }
 
+// ─── CORAZONES BG ──────────────────────────────────────────────────────────
 function createHeart(isExplosion=false, x, y) {
     const h = document.createElement('div');
     h.className = 'heart-bg';
-    h.innerHTML = '❤';
-    if (isExplosion) {
+    h.innerHTML = Math.random()>0.5 ? '❤' : '💕';
+    if (isExplosion && x!==undefined) {
         h.style.left=x+'px'; h.style.top=y+'px';
-        h.animate([{opacity:1},{opacity:0}],{duration:1000});
+        const angle=Math.random()*Math.PI*2, v=Math.random()*200+80;
+        h.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${Math.cos(angle)*v}px,${Math.sin(angle)*v}px) scale(0)`,opacity:0}],{duration:1200,easing:'ease-out'});
         document.getElementById('hearts-container').appendChild(h);
-        setTimeout(()=>h.remove(),1000);
+        setTimeout(()=>h.remove(),1300);
     } else {
         h.style.left=Math.random()*95+'vw';
         h.style.animationDuration=(Math.random()*3+3)+'s';
+        h.style.animationDelay=(Math.random()*2)+'s';
+        h.style.fontSize=(Math.random()*16+10)+'px';
         document.getElementById('hearts-container').appendChild(h);
         setTimeout(()=>h.remove(),6000);
     }
 }
 setInterval(()=>createHeart(false),600);
 
+// ─── CONFETTI ──────────────────────────────────────────────────────────────
+function launchConfetti() {
+    const colors=['#ff4d6d','#ffb3c1','#ffd700','#ff85a1','#fff'];
+    for(let i=0;i<120;i++) setTimeout(()=>{
+        const c=document.createElement('div');
+        c.className='confetti-piece';
+        c.style.left=Math.random()*100+'vw'; c.style.top='-10px';
+        c.style.background=colors[Math.floor(Math.random()*colors.length)];
+        c.style.animationDuration=(Math.random()*3+2)+'s';
+        c.style.animationDelay=(Math.random()*2)+'s';
+        c.style.borderRadius=Math.random()>0.5?'50%':'0';
+        document.getElementById('fireworks').appendChild(c);
+        setTimeout(()=>c.remove(),5000);
+    },i*30);
+}
+
+// ─── PANTALLAS ─────────────────────────────────────────────────────────────
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 }
 
+// ─── INICIO ────────────────────────────────────────────────────────────────
+window.addEventListener('load',()=>{
+    const now=new Date();
+    if(now.getMonth()===1 && now.getDate()===14) {
+        showScreen('valentines-special');
+        for(let i=0;i<30;i++) setTimeout(()=>createHeart(false),i*100);
+    }
+});
+
 function goToLoading() {
     initAudio(); startBGM(); playBlip();
     showScreen('loading-screen');
     let w=0;
-    const bar=document.getElementById('bar');
+    const bar=document.getElementById('bar'), txt=document.getElementById('loading-text');
     const iv=setInterval(()=>{
         w++; bar.style.width=w+'%';
-        if(w>=100) { clearInterval(iv); setTimeout(()=>{ showScreen('level1-screen'); buildTrivia(); },600); }
-    },30);
+        if(w===25)  { txt.innerHTML='CARGANDO RECUERDOS<br>DE LA GORDA MALA...'; playBlip(); }
+        if(w===50)  { txt.innerHTML='INSTALANDO<br>CORAZONES PIXELADOS...'; playBlip(); }
+        if(w===75)  { txt.innerHTML='CASI LISTO...<br>AGUANTÁ GORDITA ❤'; playBlip(); }
+        if(w>=100)  { clearInterval(iv); txt.innerHTML='¡LISTO! ❤'; playBlip(); setTimeout(()=>{ showScreen('level1-screen'); buildTrivia(); },600); }
+    },80);
 }
 
+// ─── NIVEL 1: TRIVIA ───────────────────────────────────────────────────────
 const triviaQ=[
     {q:"¿CÓMO LE DICE DYLAN\nA AGUSTINA?",opts:["FLACA","PRECIOSA","GORDA","AMORCITO"],ans:2},
     {q:"¿DESDE QUÉ MES\nESTÁN JUNTOS?",opts:["MARZO","MAYO","JULIO","ENERO"],ans:1},
@@ -318,91 +418,434 @@ function buildTrivia(){ triviaIdx=0; renderTrivia(); }
 function renderTrivia(){
     const q=triviaQ[triviaIdx];
     document.getElementById('trivia-container').innerHTML=`
-        <p style="font-size:0.5rem;color:#ffb3c1;margin-bottom:20px;">${q.q}</p>
-        ${q.opts.map((o,i)=>`<button class="btn" onclick="answerTrivia(${i})">${o}</button>`).join('')}`;
+        <p style="font-size:0.45rem;color:#ffd700;margin-bottom:8px;">PREGUNTA ${triviaIdx+1} DE ${triviaQ.length}</p>
+        <p style="font-size:0.55rem;color:#ffb3c1;line-height:2;margin-bottom:20px;white-space:pre-line;">${q.q}</p>
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;">
+            ${q.opts.map((o,i)=>`<button class="btn" style="min-width:130px;padding:12px;" onclick="answerTrivia(${i})">${o}</button>`).join('')}
+        </div>
+        <div id="trivia-feedback" style="height:30px;margin-top:10px;font-size:0.45rem;"></div>`;
 }
 function answerTrivia(idx){
-    if(idx===triviaQ[triviaIdx].ans){
-        playCorrect(); triviaIdx++;
-        if(triviaIdx<triviaQ.length) renderTrivia();
-        else { showAchievement('🧠','¡SABELOTODO!'); setTimeout(()=>{ showScreen('level2-screen'); startGame(); },1000); }
+    const q=triviaQ[triviaIdx];
+    const fb=document.getElementById('trivia-feedback');
+    document.querySelectorAll('#trivia-container .btn').forEach(b=>b.disabled=true);
+    if(idx===q.ans){
+        playCorrect(); fb.style.color='#4dff91'; fb.textContent='✔ ¡CORRECTO! ❤';
+        setTimeout(()=>{
+            triviaIdx++;
+            if(triviaIdx<triviaQ.length){ renderTrivia(); }
+            else { showAchievement('🧠','¡SABELOTODO!'); setTimeout(()=>{ showScreen('level2-screen'); startGame(); },1200); }
+        },900);
     } else {
-        playError(); document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'),300);
+        playError();
+        document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'),300);
+        fb.style.color='#ff4d6d'; fb.textContent='✘ ¡GORDA MALA! INTENTÁ DE NUEVO';
+        setTimeout(()=>renderTrivia(),900);
     }
 }
 
+// ─── NIVEL 2: MINI JUEGO ───────────────────────────────────────────────────
 const canvas=document.getElementById('game-canvas'), ctx=canvas.getContext('2d');
-let score=0, lives=3, gameRunning=false, fallingObjects=[], gameLoopId;
+let score=0, lives=3, gameRunning=false, fallingObjects=[], gameLoopId, spawnTimer=0, combo=0, speedMultiplier=1.0;
 
 function startGame(){
-    score=0; lives=3; fallingObjects=[]; gameRunning=true;
-    document.getElementById('score').textContent='0'; updateLives();
-    gameLoopId=setInterval(updateGame,30);
-    canvas.onclick=handleClick;
+    score=0; lives=3; fallingObjects=[]; gameRunning=true; combo=0; speedMultiplier=1.0; spawnTimer=0;
+    document.getElementById('score').textContent='0';
+    document.getElementById('combo-display').textContent='x1';
+    updateLives(); clearInterval(gameLoopId);
+    gameLoopId=setInterval(updateGame,1000/30);
+    // Listener de click y touch para el canvas
+    canvas.onclick=handleClick; 
+    canvas.ontouchstart=handleTouch;
 }
 function restartGame(){ showScreen('level2-screen'); startGame(); }
+
+function FallingObj(isBomb){
+    this.x=Math.random()*260+20; this.y=-25;
+    this.speed=(Math.random()*3.5+4)*speedMultiplier;
+    this.size=Math.random()*14+18; this.isBomb=isBomb;
+    this.wobble=Math.random()*Math.PI*2;
+    this.color=isBomb?'#555':['#ff4d6d','#ff85a1','#ffd700','#ff1744'][Math.floor(Math.random()*4)];
+}
+
+function spawnObj(){
+    const bombChance=Math.min(0.35,0.15+score*0.02);
+    fallingObjects.push(new FallingObj(Math.random()<bombChance));
+}
+
+function drawHeart(x,y,size,color){
+    ctx.save(); ctx.fillStyle=color; ctx.shadowColor=color; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.moveTo(x,y+size*0.3);
+    ctx.bezierCurveTo(x,y,x-size*0.5,y,x-size*0.5,y+size*0.3);
+    ctx.bezierCurveTo(x-size*0.5,y+size*0.6,x,y+size*0.9,x,y+size);
+    ctx.bezierCurveTo(x,y+size*0.9,x+size*0.5,y+size*0.6,x+size*0.5,y+size*0.3);
+    ctx.bezierCurveTo(x+size*0.5,y,x,y,x,y+size*0.3); ctx.fill(); ctx.restore();
+}
+
+function drawBomb(x,y,size){
+    ctx.save(); ctx.font=`${size*1.1}px serif`; ctx.textAlign='center';
+    ctx.fillText('💣',x,y+size); ctx.restore();
+}
 
 function updateGame(){
     if(!gameRunning) return;
     ctx.clearRect(0,0,300,300);
-    if(Math.random()<0.05) fallingObjects.push({x:Math.random()*280, y:-20, isBomb:Math.random()<0.2});
+    ctx.strokeStyle='rgba(255,77,109,0.07)'; ctx.lineWidth=1;
+    for(let i=0;i<300;i+=30){
+        ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,300); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(300,i); ctx.stroke();
+    }
+    speedMultiplier=1.0+score*0.07;
+    spawnTimer++;
+    if(spawnTimer>Math.max(20,40-score*2)){ spawnObj(); spawnTimer=0; }
     for(let i=fallingObjects.length-1;i>=0;i--){
-        let o=fallingObjects[i]; o.y+=4;
-        ctx.font="20px Arial";
-        ctx.fillText(o.isBomb?'💣':'❤', o.x, o.y);
-        if(o.y>300){
+        const o=fallingObjects[i];
+        o.y+=o.speed; o.wobble+=0.05;
+        const wx=o.x+Math.sin(o.wobble)*3;
+        if(o.isBomb) drawBomb(wx,o.y,o.size);
+        else         drawHeart(wx,o.y,o.size,o.color);
+        if(o.y>315){
             fallingObjects.splice(i,1);
-            if(!o.isBomb){ lives--; updateLives(); if(lives<=0) endGame(false); }
+            if(!o.isBomb){
+                lives--; combo=0;
+                document.getElementById('combo-display').textContent='x1';
+                playMiss(); updateLives();
+                document.body.classList.add('flash-red');
+                setTimeout(()=>document.body.classList.remove('flash-red'),400);
+                if(lives<=0){ endGame(false); return; }
+            }
         }
     }
 }
-function updateLives(){ document.getElementById('lives').textContent='❤'.repeat(lives); }
+
+function updateLives(){
+    document.getElementById('lives').textContent=['','❤','❤❤','❤❤❤'][Math.max(0,lives)]||'💀';
+}
+
 function handleClick(e){
-    const r=canvas.getBoundingClientRect(), cx=e.clientX-r.left, cy=e.clientY-r.top;
+    const r=canvas.getBoundingClientRect();
+    checkHit((e.clientX-r.left)*(300/r.width),(e.clientY-r.top)*(300/r.height));
+}
+function handleTouch(e){
+    e.preventDefault(); const r=canvas.getBoundingClientRect(), t=e.touches[0];
+    checkHit((t.clientX-r.left)*(300/r.width),(t.clientY-r.top)*(300/r.height));
+}
+
+function checkHit(cx,cy){
     for(let i=fallingObjects.length-1;i>=0;i--){
-        let o=fallingObjects[i];
-        if(Math.hypot(cx-o.x, cy-o.y)<30){
+        const o=fallingObjects[i], wx=o.x+Math.sin(o.wobble)*3;
+        if(Math.hypot(cx-wx,cy-(o.y+o.size*0.5))<o.size*0.9){
             fallingObjects.splice(i,1);
-            if(o.isBomb){ lives--; updateLives(); playBomb(); if(lives<=0) endGame(false); }
-            else { score++; document.getElementById('score').textContent=score; playCatch(); if(score>=10) endGame(true); }
+            if(o.isBomb){
+                lives--; combo=0;
+                document.getElementById('combo-display').textContent='x1';
+                playBomb(); updateLives();
+                document.body.classList.add('shake','flash-red');
+                setTimeout(()=>document.body.classList.remove('shake','flash-red'),400);
+                if(lives<=0){ endGame(false); return; }
+            } else {
+                combo++; score++;
+                document.getElementById('score').textContent=score;
+                if(combo>=3){ playCombo(); showComboPopup(combo); }
+                else          playCatch();
+                document.getElementById('combo-display').textContent='x'+combo;
+                const r=canvas.getBoundingClientRect();
+                createHeart(true,r.left+wx/(300/r.width),r.top+(o.y+o.size*0.5)/(300/r.height));
+                if(score>=10){ endGame(true); return; }
+            }
             break;
         }
     }
 }
+
+function showComboPopup(n){
+    const el=document.createElement('div'); el.className='combo-popup';
+    el.textContent='COMBO x'+n+'!';
+    el.style.left=(Math.random()*40+30)+'vw'; el.style.top=(Math.random()*30+20)+'vh';
+    document.body.appendChild(el); setTimeout(()=>el.remove(),900);
+}
+
 function endGame(win){
     gameRunning=false; clearInterval(gameLoopId);
-    if(win){ showAchievement('❤','¡GANASTE!'); setTimeout(()=>{ showScreen('level3-screen'); buildCountdown(); },1000); }
-    else { playGameOver(); showScreen('gameover-screen'); }
+    canvas.onclick=null; canvas.ontouchstart=null;
+    if(win){ playCorrect(); showAchievement('❤','¡ATRAPADORA DE CORAZONES!'); setTimeout(()=>{ showScreen('level3-screen'); buildCountdown(); },1200); }
+    else   { playGameOver(); setTimeout(()=>showScreen('gameover-screen'),800); }
 }
 
+// ─── NIVEL 3: CONTADOR ─────────────────────────────────────────────────────
 function buildCountdown(){
-    const start=new Date(2023,4,10), now=new Date();
-    let diff=Math.floor((now-start)/(1000*60*60*24));
-    document.getElementById('cd-years').textContent = Math.floor(diff/365);
-    document.getElementById('cd-months').textContent = Math.floor((diff%365)/30);
-    document.getElementById('cd-days').textContent = (diff%365)%30;
+    const now=new Date();
+    // Usamos la fecha global START_DATE
+    let years=now.getFullYear()-START_DATE.getFullYear();
+    let months=now.getMonth()-START_DATE.getMonth();
+    let days=now.getDate()-START_DATE.getDate();
+    
+    if(days<0){ 
+        months--; 
+        // Obtener días del mes anterior
+        days+=new Date(now.getFullYear(),now.getMonth(),0).getDate(); 
+    }
+    if(months<0){ years--; months+=12; }
+    
+    document.getElementById('cd-years').textContent=years;
+    document.getElementById('cd-months').textContent=months;
+    document.getElementById('cd-days').textContent=days;
+    showAchievement('📅','¡HISTORIADORES DEL AMOR!');
 }
-function goToQuestion(){ showScreen('question-screen'); }
+function goToQuestion(){
+    playBlip();
+    noEnabled = false;
+    noCount = 0;
+    document.getElementById('no-counter').textContent = '0';
+    const btnNo = document.getElementById('btn-no');
+    
+    // Resetear posición
+    btnNo.style.position = 'relative';
+    btnNo.style.left = '';
+    btnNo.style.top = '';
+    btnNo.textContent = 'NO';
+    
+    setTimeout(() => {
+        showScreen('question-screen');
+        setTimeout(() => { noEnabled = true; }, 800);
+    }, 50);
+}
 
-function moveNo(e){
-    const btn=document.getElementById('btn-no');
-    btn.style.position='fixed';
-    btn.style.left=Math.random()*80+'vw'; btn.style.top=Math.random()*80+'vh';
+// ─── PREGUNTA Y LÓGICA DEL BOTÓN NO ────────────────────────────────────────
+let noCount=0;
+let noEnabled=false;
+const noPhases=["GORDA MALA","GORDA MALVADA","PONÉ QUE SÍ","TE KGO A PALO","DALE :(","GORDA MALA!!","EN SERIO PONÉ SÍ","TE KGO A PALO >:(","DALE GORDIIII :(",  "ÚLTIMA VEZ... PONÉ SÍ","GORDAAAAA :(","YA SÉ QUE SÍ 😏"];
+
+// MANEJO MEJORADO DE LOS EVENTOS TOUCH Y MOUSE
+const btnNo = document.getElementById('btn-no');
+
+function handleNoInteraction(e) {
+    if(!noEnabled) return;
+    // Prevenir el click default si es un toque
+    if (e.type === 'touchstart') e.preventDefault();
+    
+    playBlip();
+    document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'),300);
+    noCount++; 
+    document.getElementById('no-counter').textContent=noCount;
+    
+    btnNo.style.position='fixed';
+    btnNo.style.left=Math.max(10,Math.floor(Math.random()*(window.innerWidth-btnNo.offsetWidth-10)))+'px';
+    btnNo.style.top=Math.max(10,Math.floor(Math.random()*(window.innerHeight-btnNo.offsetHeight-10)))+'px';
+    btnNo.textContent=noPhases[noCount%noPhases.length];
+}
+
+// Agregar listeners seguros
+btnNo.addEventListener('mouseover', handleNoInteraction);
+// Passive false es CLAVE para que preventDefault funcione
+btnNo.addEventListener('touchstart', handleNoInteraction, {passive: false});
+btnNo.addEventListener('click', (e) => e.preventDefault()); // Por seguridad
+
+function getFinalLines(){
+    const t=getYearsMonths();
+    if(noCount===0) return ["SABÍA QUE IBAS","A DECIR QUE SÍ","SIN DUDAR ❤","","💖 TE AMO UN","MONTÓN, GORDA 💖","","GRACIAS POR","ESTOS "+t,"JUNTOS ❤"];
+    if(noCount<=3)  return ["DUDASTE UN POCO...","PERO AL FINAL","DIJISTE QUE SÍ ❤","","💖 TE AMO IGUAL,","GORDA MALA 💖","","JUNTOS "+t,"Y LO QUE FALTA ❤"];
+    if(noCount<=7)  return ["INTENTASTE "+noCount+" VECES","DECIR QUE NO...","¡GORDA MALVADA! 😂","","IGUAL TE AMO 💖","PORQUE SOS MÍA","Y YO SOY TUYO ❤","","JUNTOS "+t,"JUNTOS ❤"];
+    return ["¡"+noCount+" VECES!!!","GORDA MALA DE VERDAD","JAJAJAJAJA 💀","","PERO IGUAL DIJISTE","QUE SÍ AL FINAL","¡SABÍA QUE SÍ! 💖","","TE AMO GORDA ❤"];
 }
 
 function sayYes(e){
-    clearInterval(bgmInterval);
-    showScreen('final-screen');
-    const lines=["SABÍA QUE IBAS","A DECIR QUE SÍ ❤","","TE AMO MUCHO","GORDA MALA 💖"];
-    let li=0, ci=0, el=document.getElementById('typewriter');
+    if(e) { e.stopPropagation(); }
+    stopBGM(); playFinalMusic(); launchConfetti();
+    for(let i=0;i<200;i++) setTimeout(()=>createHeart(false),i*20);
+    showScreen('final-screen'); showAchievement('💍','¡MI SAN VALENTINE!');
+    const lines=getFinalLines(), el=document.getElementById('typewriter');
+    let li=0, ci=0;
     function type(){
-        if(li<lines.length){
-            if(ci<lines[li].length){ el.innerHTML+=lines[li][ci]; ci++; setTimeout(type,100); }
-            else { el.innerHTML+='<br>'; li++; ci=0; setTimeout(type,500); }
-        }
+        if(li>=lines.length) return;
+        const line=lines[li];
+        if(ci<line.length){ el.innerHTML+=line[ci]===' '?'&nbsp;':line[ci]; ci++; setTimeout(type,55); }
+        else { el.innerHTML+='<br>'; li++; ci=0; setTimeout(type,lines[li]===''?200:80); }
     }
     type();
 }
+
+function getYearsMonths(){
+    const now=new Date();
+    // Uso de START_DATE
+    let years=now.getFullYear()-START_DATE.getFullYear();
+    let months=now.getMonth()-START_DATE.getMonth();
+    
+    if(now.getDate() < START_DATE.getDate()) months--;
+    if(months<0){ years--; months+=12; }
+    
+    if(years===0) return months+' MESES';
+    return years+' AÑO'+(years>1?'S':'')+(months>0?' Y '+months+' MES'+(months>1?'ES':''):'');
+}
+
+// ─── ESTRELLAS DE FONDO ────────────────────────────────────────────────────
+(function(){
+    const sc = document.getElementById('stars-canvas');
+    const sctx = sc.getContext('2d');
+
+    function resize(){
+        sc.width  = window.innerWidth;
+        sc.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const NUM_STARS   = 120;
+    const NUM_SPARKLE = 18;
+
+    function makeStar(){
+        return {
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            size: Math.random() * 1.8 + 0.4,
+            alpha: Math.random(),
+            speed: Math.random() * 0.008 + 0.003,
+            dir: Math.random() > 0.5 ? 1 : -1,
+            color: ['rgba(255,255,255,', 'rgba(255,180,200,', 'rgba(255,220,100,'][Math.floor(Math.random()*3)]
+        };
+    }
+
+    function makeSparkle(){
+        return {
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            size: Math.random() * 4 + 3,
+            alpha: Math.random(),
+            speed: Math.random() * 0.012 + 0.005,
+            dir: Math.random() > 0.5 ? 1 : -1,
+            color: Math.random() > 0.5 ? 'rgba(255,180,200,' : 'rgba(255,220,100,'
+        };
+    }
+
+    const stars    = Array.from({length: NUM_STARS},   makeStar);
+    const sparkles = Array.from({length: NUM_SPARKLE}, makeSparkle);
+
+    function drawPixelStar(x, y, size, alpha, color){
+        sctx.fillStyle = color + alpha + ')';
+        const s = Math.ceil(size);
+        sctx.fillRect(Math.round(x)-s, Math.round(y)-s, s*2, s*2);
+        sctx.fillStyle = color + (alpha*0.6) + ')';
+        sctx.fillRect(Math.round(x)-Math.ceil(s/2), Math.round(y)-s*3, Math.ceil(s), s*2);
+        sctx.fillRect(Math.round(x)-Math.ceil(s/2), Math.round(y)+s,   Math.ceil(s), s*2);
+        sctx.fillRect(Math.round(x)-s*3, Math.round(y)-Math.ceil(s/2), s*2, Math.ceil(s));
+        sctx.fillRect(Math.round(x)+s,   Math.round(y)-Math.ceil(s/2), s*2, Math.ceil(s));
+    }
+
+    function animateStars(){
+        sctx.clearRect(0, 0, sc.width, sc.height);
+        for(const s of stars){
+            s.alpha += s.speed * s.dir;
+            if(s.alpha >= 1){ s.alpha = 1; s.dir = -1; }
+            if(s.alpha <= 0){ s.alpha = 0; s.dir =  1; s.x = Math.random() * sc.width; s.y = Math.random() * sc.height; }
+            const px = Math.ceil(s.size);
+            sctx.fillStyle = s.color + s.alpha + ')';
+            sctx.fillRect(Math.round(s.x), Math.round(s.y), px, px);
+        }
+        for(const sp of sparkles){
+            sp.alpha += sp.speed * sp.dir;
+            if(sp.alpha >= 1){ sp.alpha = 1; sp.dir = -1; }
+            if(sp.alpha <= 0){ sp.alpha = 0; sp.dir =  1; sp.x = Math.random() * sc.width; sp.y = Math.random() * sc.height; }
+            drawPixelStar(sp.x, sp.y, sp.size, sp.alpha, sp.color);
+        }
+        requestAnimationFrame(animateStars);
+    }
+    animateStars();
+})();
+
+// ─── GATITOS TUXEDO ESTILO MINECRAFT ─────────────────────────────────────
+(function(){
+    const cc   = document.getElementById('cats-canvas');
+    const cctx = cc.getContext('2d');
+    const S = 4; // Escala
+    const C = { 1:'#111111', 2:'#eeeeee', 3:'#ff99bb', 4:'#44cc66', 5:'#555555', 6:'#222222' };
+
+    const HEAD = [[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[1,1,4,1,1,4,1,1],[1,1,4,1,1,4,1,1],[1,1,1,1,1,1,1,1],[1,1,1,3,3,1,1,1],[1,2,2,2,2,2,2,1],[1,1,1,1,1,1,1,1]];
+    const HEAD_BLINK = HEAD.map((row,ri)=>row.map(v=>(ri===2||ri===3)&&v===4?1:v));
+    const EAR = [[1,3],[1,1],[1,1]];
+    const BODY = [[1,1,2,2,2,2,1,1],[1,2,2,2,2,2,2,1],[1,2,2,1,1,2,2,1],[1,2,2,1,1,2,2,1],[1,1,1,1,1,1,1,1]];
+    const LEGS = [[1,2,2,1,1,2,2,1],[1,2,2,1,1,2,2,1],[1,1,1,1,1,1,1,1]];
+
+    function drawPixels(grid, ox, oy, flipX){
+        const cols = grid[0].length;
+        for(let r=0;r<grid.length;r++){
+            for(let c=0;c<cols;c++){
+                const v=grid[r][c];
+                if(!v||!C[v]) continue;
+                cctx.fillStyle=C[v];
+                const px=flipX?ox+(cols-1-c)*S:ox+c*S;
+                cctx.fillRect(px,oy+r*S,S,S);
+            }
+        }
+    }
+
+    function drawTail(ox, oy, wagAngle, flipX){
+        const wag = Math.round(Math.sin(wagAngle)*2);
+        const segs=[{dx:1,dy:0},{dx:2,dy:-1},{dx:3,dy:-2},{dx:4,dy:-2},{dx:4,dy:-1},{dx:3,dy:0},{dx:2,dy:1}];
+        segs.forEach(({dx,dy},i)=>{
+            cctx.fillStyle = i>=segs.length-2 ? C[2] : C[1];
+            const px=flipX?ox-dx*S:ox+dx*S;
+            cctx.fillRect(px,(oy+(dy+wag)*S),S*2,S*2);
+        });
+    }
+
+    function drawName(name, cx, y){
+        cctx.save();
+        cctx.font='7px "Press Start 2P",monospace';
+        cctx.textAlign='center';
+        cctx.textBaseline='alphabetic';
+        const tw=cctx.measureText(name).width;
+        const pad=4;
+        cctx.fillStyle='rgba(0,0,0,0.65)';
+        cctx.fillRect(Math.round(cx-tw/2-pad),Math.round(y-9-pad),Math.round(tw+pad*2),Math.round(9+pad*2));
+        cctx.fillStyle='#3a1020';
+        cctx.fillText(name,cx+1,y+1);
+        cctx.fillStyle='#ffffff';
+        cctx.fillText(name,cx,y);
+        cctx.restore();
+    }
+
+    const CAT_W=8*S, EAR_H=3*S, HEAD_H=8*S, BODY_H=5*S, LEGS_H=3*S, TOTAL_H=EAR_H+HEAD_H+BODY_H+LEGS_H;
+    const cats = [
+        {name:'Pochocleis', x:0, y:0, wagT:0,   blinkT:0,  blink:false, side:'left' },
+        {name:'Milaneis',   x:0, y:0, wagT:1.6, blinkT:55, blink:false, side:'right'},
+    ];
+
+    function placeCats(){
+        cc.width = window.innerWidth; cc.height = window.innerHeight;
+        const W=cc.width, H=cc.height;
+        const baseY = H - TOTAL_H - 32 - 20;
+        cats[0].x = Math.round(W*0.12);
+        cats[0].y = baseY;
+        cats[1].x = Math.round(W*0.88) - CAT_W;
+        cats[1].y = baseY;
+    }
+    placeCats();
+    window.addEventListener('resize', placeCats);
+
+    function animateCats(){
+        cctx.clearRect(0,0,cc.width,cc.height);
+        for(const cat of cats){
+            cat.wagT+=0.06;
+            cat.blinkT++;
+            if(!cat.blink && cat.blinkT>120){ cat.blink=true;  cat.blinkT=0; }
+            else if(cat.blink && cat.blinkT>6){ cat.blink=false; cat.blinkT=0; }
+            
+            const {x,y,wagT,blink,side}=cat;
+            const flipX=side==='right';
+            drawPixels(EAR, flipX?x+CAT_W-2*S:x, y, false);
+            drawPixels(EAR, flipX?x:x+CAT_W-2*S, y, true);
+            drawPixels(blink?HEAD_BLINK:HEAD, x, y+EAR_H, flipX);
+            drawPixels(BODY, x, y+EAR_H+HEAD_H, flipX);
+            drawPixels(LEGS, x, y+EAR_H+HEAD_H+BODY_H, flipX);
+            const tailX=flipX?x-S:x+CAT_W;
+            drawTail(tailX, y+EAR_H+HEAD_H+S, wagT, flipX);
+            drawName(cat.name, x+CAT_W/2, y-6);
+        }
+        requestAnimationFrame(animateCats);
+    }
+    animateCats();
+})();
 </script>
+
 </body>
 </html>
